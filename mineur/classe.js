@@ -14,8 +14,8 @@ const CLASS_DATA = {
 
   // Compétence ultime (se débloque au niveau 6)
   ultime: {
-    nom: "Ulti",
-    desc: "???"
+    nom: "Golem de Norlithe",
+    desc: "La norlithe permet au mineur de se transformer temporairement en golem de norlithe. Une fois par jour, pendant toute la durée d'un combat, le mineur se transforme en un golem composé de Norlithe. Une fois transformé, lLe mineur ne peut utiliser aucun équipement, ni arme ni armure. Sa PU est doublée. Son ARM, ses DEG et ses PV sont augmentés de sa valeur de PU. Après le combat, le mineur revient à sa forme naine et est épuisé : il tombe à 1PV et sa PU est divisée par 2 (arrondi à l'inférieur) jusqu'à sa prochaine nuit de sommeil."
   },
 
   // Les 3 branches avec leurs 3 compétences chacune
@@ -28,15 +28,15 @@ const CLASS_DATA = {
       nom: "Peau de pierre",
       competences: [
         {
-          nom: "Peau de pierre 1",
+          nom: "Rempart",
           desc: "+1 ARM de manière permanente."
         },
         {
-          nom: "Peau de pierre 2",
+          nom: "Moins une",
           desc: "Sur un jet de PU, le mineur échappe à un échec critique."
         },
         {
-          nom: "Peau de pierre 3",
+          nom: "Inébranlable",
           desc: "Le mineur est insensible aux effets de saignement, ne peut pas être renversé et son armure ne peut pas être brisée."
         }
       ]
@@ -62,15 +62,15 @@ const CLASS_DATA = {
       nom: "Tueur de gobelins",
       competences: [
         {
-          nom: "Tueur de gobelins 1",
+          nom: "Seul contre tous",
           desc: "Le mineur a +1 au combat contre les adversaires plus nombreux (gobelins et autres hordes)."
         },
         {
-          nom: "Tueur de gobelins 2",
+          nom: "Interception",
           desc: "Lorsqu'un allié proche est attaqué, le mineur peut intercepter cette attaque sur un jet de PU réussi."
         },
         {
-          nom: "Tueur de gobelins 3",
+          nom: "Reviens par là !",
           desc: "Si un adversaire du mineur attaque une autre cible, le mineur obtient une attaque gratuite contre lui."
         }
       ]
