@@ -28,15 +28,15 @@ const CLASS_DATA = {
       nom: "Commandement",
       competences: [
         {
-          nom: "Commandement 1",
+          nom: "Aura de commandement",
           desc: "Les troupes sous les ordres du guerrier ont +1 au combat."
         },
         {
-          nom: "Commandement 2",
+          nom: "Plan d'attaque",
           desc: "Le guerrier élabore un plan, ce qui baisse le seuil de CRIT au combat de 1 pour toutes les troupes qui suivent le plan."
         },
         {
-          nom: "Commandement 3",
+          nom: "Sus à l'ennemi !",
           desc: "Le guerrier donne un ordre d'attaque à un allié, ce qui lui permet de réasier une action de combat gratuite, même s'il est hors-combat."
         }
       ]
@@ -45,15 +45,15 @@ const CLASS_DATA = {
       nom: "Maître d’armes",
       competences: [
         {
-          nom: "Maître d’armes 1",
+          nom: "Expertise",
           desc: "DEG+1 avec toutes les armes et à mains nues."
         },
         {
-          nom: "Maître d’armes 2",
+          nom: "Baroud d'honneur",
           desc: "Lorsque le guerrier échoue à un jet de combat, son action suivante est automatiquement un CRIT."
         },
         {
-          nom: "Maître d’armes 3",
+          nom: "Enchaînement",
           desc: "En cas de réussite d'une action de combat, une fois par tour, le guerrier peut effectuer un enchaînement en effectuant une action de cmobat différente supplémentaire."
         }
       ]
