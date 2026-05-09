@@ -28,16 +28,16 @@ const CLASS_DATA = {
       nom: "Archer",
       competences: [
         {
-          nom: "Archer 1",
+          nom: "Maître archer",
           desc: "+1 aux jets avec un arc."
         },
         {
-          nom: "Archer 2",
+          nom: "Tireur embusqué",
           desc: "Sur un jet de FI, le trappeur se camoufle. Toute attaque réalisée depuis le camouflage a un seuil de CRIT baissé de 1. Tant qu'il n'est pas repéré par un jet d'ES de difficulté le jet de FI du trappeur, celui-ci reste camouflé."
         },
         {
-          nom: "Archer 3",
-          desc: "Pour un coût de 2 actions de FI et sur le meilleur des deux jets de FI, le trappeur tire une flèche qui tue instantanément une cible. Sur les boss, DEGx3."
+          nom: "Tir critique",
+          desc: "A remanier... Pour un coût de 2 actions de FI et sur le meilleur des deux jets de FI, le trappeur tire une flèche qui tue instantanément une cible. Sur les boss, DEGx3."
         }
       ]
     },
@@ -79,15 +79,15 @@ const CLASS_DATA = {
       nom: "Chasseur",
       competences: [
         {
-          nom: "Chasseur 1",
+          nom: "Tueur de bêtes",
           desc: "+1 aux jets contre les bêtes."
         },
         {
-          nom: "Chasseur 2",
+          nom: "Familier",
           desc: "Sur un jet d’ES, le trappeur dompte une bête qui l'accompagne"
         },
         {
-          nom: "Chasseur 3",
+          nom: "Attaque coordonnée",
           desc: "Lorsque le familier réussit une attaque contre la cible du trappeur, celui-ci obtient une action de FI gratuite."
         }
       ]
