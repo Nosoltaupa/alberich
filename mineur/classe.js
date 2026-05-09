@@ -33,7 +33,7 @@ const CLASS_DATA = {
         },
         {
           nom: "Peau de pierre 2",
-          desc: "Sur un jet de PU, le mineur échappe à un critique."
+          desc: "Sur un jet de PU, le mineur échappe à un échec critique."
         },
         {
           nom: "Peau de pierre 3",
@@ -45,16 +45,16 @@ const CLASS_DATA = {
       nom: "Excavateur",
       competences: [
         {
-          nom: "Excavateur 1",
+          nom: "Par ici la sortie !",
           desc: "Dans un dédale, le mineur trouve toujours la sortie."
         },
         {
-          nom: "Excavateur 2",
+          nom: "Nyctalope",
           desc: "Le mineur voit dans la pénombre comme en plein jour."
         },
         {
-          nom: "Excavateur 3",
-          desc: "???"
+          nom: "Sens de la roche",
+          desc: "Au prix d'une action d'ES (réussite automatique), le mineur ressent la vibration dans la roche et détecte tout mouvement dans un rayon de 50m autour de lui, y compris à travers la matière."
         }
       ]
     },
@@ -67,11 +67,11 @@ const CLASS_DATA = {
         },
         {
           nom: "Tueur de gobelins 2",
-          desc: "DEG+1 avec sa pioche."
+          desc: "Lorsqu'un allié proche est attaqué, le mineur peut intercepter cette attaque sur un jet de PU réussi."
         },
         {
           nom: "Tueur de gobelins 3",
-          desc: "Le mineur peut provoquer les ennemis alentours, les forçant à l'attaquer."
+          desc: "Si un adversaire du mineur attaque une autre cible, le mineur obtient une attaque gratuite contre lui."
         }
       ]
     }
