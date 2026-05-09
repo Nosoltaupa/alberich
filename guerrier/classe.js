@@ -50,7 +50,7 @@ const CLASS_DATA = {
         },
         {
           nom: "Maître d’armes 2",
-          desc: "En cas d’échec à un jet de combat, le jet suivant est forcément un 6."
+          desc: "Lorsque le guerrier échoue à un jet de combat, son action suivante est automatiquement un CRIT."
         },
         {
           nom: "Maître d’armes 3",
@@ -58,20 +58,35 @@ const CLASS_DATA = {
         }
       ]
     },
+    // {
+    //   nom: "Duelliste",
+    //   competences: [
+    //     {
+    //       nom: "Duelliste 1",
+    //       desc: "+1 à tous les jets de combat contre des humanoïdes."
+    //     },
+    //     {
+    //       nom: "Duelliste 2",
+    //       desc: "Ne peut pas être surpris au combat par un humanoïde."
+    //     },
+    //     {
+    //       nom: "Duelliste 3",
+    //       desc: "+1 attaque par tour de combat"
+    //     }
     {
-      nom: "Duelliste",
+      nom: "Domination",
       competences: [
         {
-          nom: "Duelliste 1",
-          desc: "+1 à tous les jets de combat contre des humanoïdes."
+          nom: "Désarmer",
+          desc: "Sur un CRIT, la cible du guerrier subit l'effet désarmé, ce qui baisse ses DEG de 1."
         },
         {
-          nom: "Duelliste 2",
-          desc: "Ne peut pas être surpris au combat par un humanoïde."
+          nom: "Renverser",
+          desc: "Sur un CRIT contre une cible désarmée, la cible du guerrier subit l'effet renversé, ce qui la projette au sol jusqu'à la fin du tour. La cible devra dépenser une action de FI au tour suivant pour se relever."
         },
         {
-          nom: "Duelliste 3",
-          desc: "+1 attaque par tour de combat"
+          nom: "Terrasser",
+          desc: "Toute attaque réussie contre une cible affectée par un effet est automatiquement un CRIT."
         }
       ]
     }
