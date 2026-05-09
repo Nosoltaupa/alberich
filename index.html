@@ -88,7 +88,7 @@
     font-size: clamp(2rem, 8vw, 3.8rem);
     font-weight: 700;
     letter-spacing: .06em;
-    text-align: center;
+    
     line-height: 1;
     color: var(--gold-l);
     margin-bottom: .4rem;
@@ -103,7 +103,7 @@
     letter-spacing: .28em;
     color: var(--text-m);
     text-transform: uppercase;
-    text-align: center;
+    
     margin-bottom: 3rem;
     animation: fadeIn .8s .2s ease both;
   }
@@ -139,6 +139,7 @@
     display: flex;
     flex-direction: column;
     gap: .8rem;
+    width: 100%;
     max-width: 480px;
     margin-bottom: 3rem;
   }
@@ -198,18 +199,13 @@
   .class-card-icon img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .class-card:hover .class-card-icon { border-color: var(--ember); }
 
-  .class-card-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: .25rem;
-  }
   .class-card-name {
     font-family: 'Cinzel', serif;
     font-size: .95rem;
     font-weight: 600;
     letter-spacing: .08em;
     color: var(--gold);
+    
     transition: color .2s;
   }
   .class-card:hover .class-card-name { color: var(--gold-l); }
@@ -218,6 +214,7 @@
     font-size: 12.5px;
     color: var(--text-m);
     font-style: italic;
+    
     line-height: 1.5;
     opacity: .8;
   }
@@ -268,7 +265,7 @@
     font-size: 11.5px;
     color: var(--text-d);
     font-style: italic;
-    text-align: center;
+    
     animation: fadeIn .8s .8s ease both;
   }
 
@@ -304,7 +301,7 @@
 //  CONFIGURATION : ajoutez / modifiez vos classes ici
 // ============================================================
 const CLASSES = [
-  {
+    {
     id:       'trappeur',              // nom du dossier
     nom:      'Trappeur',
     article:  'Le',
@@ -362,10 +359,10 @@ function buildGrid() {
              onerror="this.style.display='none';this.parentElement.textContent='⚔'">
       </div>
       <div class="class-card-info">
-       <div class="class-card-name">${cls.article} ${cls.nom}</div>
-       <div class="class-card-ambiance">${cls.ambiance}</div>
+        <div class="class-card-name">${cls.article} ${cls.nom}</div>
+        <div class="class-card-ambiance">${cls.ambiance}</div>
+        ${lvl ? `<div class="class-card-progress">Niveau ${lvl}</div>` : ''}
       </div>
-      ${lvl ? `<div class="class-card-progress">Niveau ${lvl}</div>` : ''}
     `;
 
     grid.appendChild(card);
