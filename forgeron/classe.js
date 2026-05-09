@@ -30,15 +30,15 @@ const CLASS_DATA = {
       nom: "Brise-armure",
       competences: [
         {
-          nom: "Brise-armure 1",
+          nom: "Bris d'armure",
           desc: "Lorsque le forgeron effectue un CRIT au combat, il applique l'effet bris d'armure à sa cible, ce qui réduit son ARM de 1."
         },
         {
-          nom: "Brise-armure 2",
+          nom: "Faille dans l'armure",
           desc: "Le seuil de CRIT des cibles affectées par bris d'armure est abaissé de 1."
         },
         {
-          nom: "Brise-armure 3",
+          nom: "Faiblesse",
           desc: "Lorsque l'armure de la cible est déjà brisée, les CRIT du forgeron infligent l'effet faiblesse. La prochaine attaque réussie contre cette cible est automatiquement un CRIT."
         }
       ]
@@ -47,15 +47,15 @@ const CLASS_DATA = {
       nom: "Affûter",
       competences: [
         {
-          nom: "Affûter 1",
+          nom: "Pôlir",
           desc: "Sur un jet de FI, augmente l’ARM d’une armure forgée de 1 (2 si critique). Non cumulable."
         },
         {
-          nom: "Affûter 2",
+          nom: "Aiguiser",
           desc: "Sur un jet de FI, augmente les DEG d’une arme forgée de 1 (2 si critique). Non cumulable."
         },
         {
-          nom: "Affûter 3",
+          nom: "Arme acérée",
           desc: "Améliore grandement les qualités d'une arme. Celle-ci obtient la description suivante : une fois par combat, une attaque normale devient un CRIT."
         }
       ]
@@ -64,7 +64,7 @@ const CLASS_DATA = {
       nom: "Forgeron de guerre",
       competences: [
         {
-          nom: "Forgeron de guerre 1",
+          nom: "Expertise des armes forgées",
           desc: "Les DEG sont augmentés de 1 en maniant une arme forgée."
         },
         {
