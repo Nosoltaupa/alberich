@@ -136,11 +136,10 @@
 
   /* Grille de classes */
   .classes-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1rem;
-    width: 100%;
-    max-width: 560px;
+    display: flex;
+    flex-direction: column;
+    gap: .8rem;
+    max-width: 480px;
     margin-bottom: 3rem;
   }
 
@@ -151,11 +150,11 @@
     background: var(--bg2);
     text-decoration: none;
     color: inherit;
-    padding: 1.4rem 1.2rem 1.2rem;
+    padding: 1rem 1.2rem;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    gap: .7rem;
+    gap: 1.1rem;
     transition: border-color .2s, background .2s, transform .2s;
     cursor: pointer;
     position: relative;
@@ -199,13 +198,18 @@
   .class-card-icon img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .class-card:hover .class-card-icon { border-color: var(--ember); }
 
+  .class-card-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+  }
   .class-card-name {
     font-family: 'Cinzel', serif;
     font-size: .95rem;
     font-weight: 600;
     letter-spacing: .08em;
     color: var(--gold);
-    text-align: center;
     transition: color .2s;
   }
   .class-card:hover .class-card-name { color: var(--gold-l); }
@@ -214,7 +218,6 @@
     font-size: 12.5px;
     color: var(--text-m);
     font-style: italic;
-    text-align: center;
     line-height: 1.5;
     opacity: .8;
   }
@@ -358,8 +361,10 @@ function buildGrid() {
         <img src="${cls.icone}" alt="${cls.nom}"
              onerror="this.style.display='none';this.parentElement.textContent='⚔'">
       </div>
-      <div class="class-card-name">${cls.article} ${cls.nom}</div>
-      <div class="class-card-ambiance">${cls.ambiance}</div>
+      <div class="class-card-info">
+       <div class="class-card-name">${cls.article} ${cls.nom}</div>
+       <div class="class-card-ambiance">${cls.ambiance}</div>
+      </div>
       ${lvl ? `<div class="class-card-progress">Niveau ${lvl}</div>` : ''}
     `;
 
