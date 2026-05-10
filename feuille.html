@@ -65,8 +65,14 @@
   .bille.fixed  { cursor: default; }
   .bille.locked { cursor: default; opacity: .35; }
   .bille:not(.locked):not(.fixed):hover { transform: scale(1.18); border-color: var(--ember-light); }
-  .bille-niveau { width: 22px; height: 22px; }
+  .bille-niveau {
+    width: 22px; height: 22px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Cinzel', serif; font-size: 9px; font-weight: 600;
+    color: transparent;
+  }
   .bille-niveau.filled { background: var(--gold); border-color: var(--gold-light); }
+  .bille-niveau.current { background: var(--gold); border-color: var(--gold-light); color: var(--bg); }
 
   /* ---- NIVEAU ---- */
   .niveau-block { display: flex; flex-direction: column; align-items: center; gap: .6rem; }
@@ -255,11 +261,13 @@ function renderNiveau() {
   const row = $('billes-niveau');
   row.innerHTML = '';
   for (let i = 0; i < MAX_LVL; i++) {
-    const filled = i < state.niveau;
-    const isNext = i === state.niveau;
+    const filled  = i < state.niveau;
+    const isCurrent = i === state.niveau - 1; // dernière bille remplie = niveau actuel
+    const isNext  = i === state.niveau;
     const b = document.createElement('div');
-    b.className = `bille bille-niveau${filled ? ' filled' : ''}${!isNext && !filled ? ' locked' : ''}`;
+    b.className = `bille bille-niveau${filled ? (isCurrent ? ' current' : ' filled') : ''}${!isNext && !filled ? ' locked' : ''}`;
     b.title = `Niveau ${i + 1}`;
+    b.textContent = isCurrent ? state.niveau : '';
     if (isNext && state.niveau < MAX_LVL) b.onclick = () => { state.niveau++; state.ptsDispos++; save(); renderAll(); };
     row.appendChild(b);
   }
