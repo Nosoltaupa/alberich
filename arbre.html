@@ -4,120 +4,34 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Arbre de compétences</title>
+<link rel="stylesheet" href="theme.css">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+<script src="theme.js"></script>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root,
-  [data-theme="dark"] {
-    --bg:           #0f0d0b;
-    --bg2:          #1a1612;
-    --bg3:          #231f1a;
+  /* Variables spécifiques à arbre.html */
+  :root {
     --bg-ult:       #1c1710;
     --bg-ult-hdr:   #211c13;
     --bg-skill-on:  #1e1a15;
     --bg-skill-hdr: #231f19;
-    --border:       #3a3026;
-    --border-light: #52463a;
-    --ember:        #c8622a;
-    --ember-light:  #e07840;
-    --gold:         #c9a84c;
-    --gold-light:   #e2c06a;
-    --text:         #e8dfd0;
-    --text-muted:   #8a7d6e;
-    --text-dim:     #5a5045;
     --locked-text:  #4a4238;
     --prog-bg:      #161210;
     --prog-node:    #231f1a;
     --prog-done:    #2a2010;
   }
-
   [data-theme="light"] {
-    --bg:           #f5f0e8;
-    --bg2:          #ede6d8;
-    --bg3:          #e2d9c8;
     --bg-ult:       #ede6d8;
     --bg-ult-hdr:   #e5dcc8;
     --bg-skill-on:  #e8e0d0;
     --bg-skill-hdr: #ddd4c0;
-    --border:       #c8b89a;
-    --border-light: #a89070;
-    --ember:        #a84e1a;
-    --ember-light:  #c06020;
-    --gold:         #8a6820;
-    --gold-light:   #6a4e10;
-    --text:         #2a2018;
-    --text-muted:   #5a4a30;
-    --text-dim:     #8a7a60;
     --locked-text:  #b0a080;
     --prog-bg:      #ede6d8;
     --prog-node:    #e2d9c8;
     --prog-done:    #d8ceb0;
   }
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Crimson Pro', Georgia, serif;
-    font-size: 16px;
-    min-height: 100vh;
-    padding: 2rem 1.5rem 4rem;
-    transition: background .3s, color .3s;
-  }
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-    background-image:
-      radial-gradient(circle at 1px 1px, rgba(255,255,255,0.015) 1px, transparent 0),
-      radial-gradient(circle at 3px 3px, rgba(255,255,255,0.01) 1px, transparent 0);
-    background-size: 4px 4px;
-  }
-  [data-theme="light"] body::before {
-    background-image:
-      radial-gradient(circle at 1px 1px, rgba(0,0,0,0.05) 1px, transparent 0),
-      radial-gradient(circle at 3px 3px, rgba(0,0,0,0.025) 1px, transparent 0);
-  }
-
+  body { padding: 2rem 1.5rem 4rem; }
   .container { max-width: 820px; margin: 0 auto; position: relative; z-index: 1; }
-
-  /* ---- Nav haut ---- */
-  .top-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-  }
-  .back-link {
-    font-family: 'Cinzel', serif;
-    font-size: 9px;
-    letter-spacing: .12em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    text-decoration: none;
-    border: 1px solid var(--border-light);
-    padding: 5px 12px;
-    border-radius: 2px;
-    transition: all .15s;
-  }
-  .back-link:hover { border-color: var(--ember); color: var(--ember-light); }
-
-  .theme-toggle {
-    font-family: 'Cinzel', serif;
-    font-size: 9px;
-    letter-spacing: .12em;
-    text-transform: uppercase;
-    padding: 5px 12px;
-    border-radius: 2px;
-    cursor: pointer;
-    border: 1px solid var(--border-light);
-    background: transparent;
-    color: var(--text-muted);
-    transition: all .15s;
-  }
-  .theme-toggle:hover { border-color: var(--ember); color: var(--ember-light); }
 
   /* ---- En-tête ---- */
   .header {
