@@ -15,8 +15,8 @@
   --gold:         #c9a84c;
   --gold-l:       #e2c06a;
   --text:         #e8dfd0;
-  --text-m:       #8a7d6e;
-  --text-d:       #5a5045;
+  --text-m:       #a89880;  /* rehaussé : était #8a7d6e */
+  --text-d:       #7a6e60;  /* rehaussé : était #5a5045 */
 
   /* Alias pour compatibilité entre pages */
   --border-light: var(--border-h);
