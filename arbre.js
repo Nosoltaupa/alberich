@@ -34,6 +34,10 @@ const canUnlockBranch = (bi, si) => si === 0 || !!unlocked[`${bi}-${si - 1}`];
 const countUnlocked   = () => Object.values(unlocked).filter(Boolean).length;
 const canUnlockMore   = () => countUnlocked() < playerLevel;
 
+// ---- Va chercher correctement dans les dossiers de classe ----
+const params = new URLSearchParams(window.location.search);
+const CLASS_ID = params.get('classe');
+
 // ---- Persistance localStorage ----
 function saveToLocal() {
   try {
@@ -153,7 +157,7 @@ function renderTree() {
     col.innerHTML = `
       <div class="branch-header">
         <div class="branch-icon-wrap">
-          <img src="branche${bi + 1}.webp" alt="${branch.nom}" onerror="this.style.display='none'">
+          <img src="${CLASS_ID}/branche${bi + 1}.webp" alt="${branch.nom}" onerror="this.style.display='none'">
         </div>
         <div class="branch-name">${branch.nom}</div>
       </div>`;
