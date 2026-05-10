@@ -6,7 +6,7 @@
 let playerLevel = 1;
 const unlocked   = {};   // compétences débloquées
 const openCards  = {};   // encarts ouverts
-const progChoices = {};  // choix de progression : { 2: {type:'stat',value:'PU'}, 4: {type:'crit',value:'FI'}, ... }
+const progChoices = {};  // choix de progression : { 2: {key:'stat_PU'}, 4: {key:'crit_FI'}, ... }
 
 const params = new URLSearchParams(window.location.search);
 const CLASS_ID = params.get('classe');
@@ -217,7 +217,7 @@ function renderProgression() {
   for (let lvl = 1; lvl <= 10; lvl++) {
     const def      = PROG_LEVELS[lvl];
     const reached  = lvl <= playerLevel;
-    const choice   = progChoices[lvl];  // {optionKey, stat?}
+    const choice   = progChoices[lvl];
     const chosen   = !!choice;
 
     let levelClass = '';
@@ -257,28 +257,45 @@ function renderProgression() {
   }
 }
 
-function buildProgOption(opt, lvl, reached, choice) {
+function buildChoiceButton(label, onClick, options = {}) {
   const btn = document.createElement('div');
-  btn.className = 'prog-option';
-  btn.innerHTML = `<span class="prog-option-title">${opt.title}</span>`;
+  btn.className = ['prog-option', options.className || ''].filter(Boolean).join(' ');
+  btn.innerHTML = `<span class="prog-option-title">${label}</span>`;
+  if (onClick) btn.onclick = onClick;
+  return btn;
+}
 
-  if (choice) {
-    if (choice.key === opt.key) {
-      btn.classList.add('chosen');
-      if (reached) {
-        const rev = document.createElement('button');
-        rev.className = 'prog-revoke';
-        rev.textContent = '↩ annuler';
-        rev.onclick = e => { e.stopPropagation(); revokeProgChoice(lvl); };
-        btn.appendChild(rev);
-      }
-    } else {
-      btn.classList.add('unchosen');
-    }
-  } else if (reached) {
-    btn.onclick = () => makeProgChoice(lvl, { key: opt.key });
-  }
+function appendCancelButton(btn, lvl) {
+  const rev = document.createElement('button');
+  rev.className = 'prog-revoke';
+  rev.textContent = '↩ annuler';
+  rev.onclick = e => { e.stopPropagation(); revokeProgChoice(lvl); };
+  btn.appendChild(rev);
+}
 
+function buildStatSelector(lvl, prefix, labelForStat) {
+  const wrap = document.createElement('div');
+  wrap.className = 'prog-stat-select';
+
+  STATS.forEach(stat => {
+    wrap.appendChild(buildChoiceButton(
+      stat,
+      () => makeProgChoice(lvl, { key: `${prefix}_${stat}` }),
+      { className: 'compact' }
+    ));
+  });
+
+  const hint = document.createElement('span');
+  hint.className = 'prog-select-hint';
+  hint.textContent = labelForStat;
+  wrap.appendChild(hint);
+
+  return wrap;
+}
+
+function buildChosenOption(label, lvl, reached) {
+  const btn = buildChoiceButton(label, null, { className: 'chosen' });
+  if (reached) appendCancelButton(btn, lvl);
   return btn;
 }
 
@@ -286,22 +303,32 @@ function buildStatPvOptions(lvl, reached, choice) {
   const wrap = document.createElement('div');
   wrap.className = 'prog-options';
 
-  const options = [
-    { key: 'PU', title: '+1 PU' },
-    { key: 'FI', title: '+1 FI' },
-    { key: 'ES', title: '+1 ES' },
-    { key: 'PV', title: '+1 ♥' },
-  ];
+  if (choice) {
+    if (choice.key === 'PV') return buildChosenOption('+1 ♥', lvl, reached);
+    if (choice.key?.startsWith('stat_')) return buildChosenOption(`+1 ${choice.key.split('_')[1]}`, lvl, reached);
+  }
 
-  options.forEach((opt, i) => {
-    if (i === 3) {
-      const orEl = document.createElement('span');
-      orEl.className = 'prog-or';
-      orEl.textContent = 'ou';
-      wrap.appendChild(orEl);
-    }
-    wrap.appendChild(buildProgOption(opt, lvl, reached, choice));
-  });
+  if (!reached) {
+    wrap.appendChild(buildChoiceButton('+1 carac', null));
+    const orEl = document.createElement('span');
+    orEl.className = 'prog-or';
+    orEl.textContent = 'ou';
+    wrap.appendChild(orEl);
+    wrap.appendChild(buildChoiceButton('+1 ♥', null));
+    return wrap;
+  }
+
+  wrap.appendChild(buildChoiceButton('+1 carac', () => {
+    wrap.innerHTML = '';
+    wrap.appendChild(buildStatSelector(lvl, 'stat', 'Choisir la caractéristique'));
+  }));
+
+  const orEl = document.createElement('span');
+  orEl.className = 'prog-or';
+  orEl.textContent = 'ou';
+  wrap.appendChild(orEl);
+
+  wrap.appendChild(buildChoiceButton('+1 ♥', () => makeProgChoice(lvl, { key: 'PV' })));
 
   return wrap;
 }
@@ -310,18 +337,35 @@ function buildCritActOptions(lvl, reached, choice) {
   const wrap = document.createElement('div');
   wrap.className = 'prog-options';
 
-  const critOpts = STATS.map(s => ({ key: `crit_${s}`, title: `CRIT ${s} − 1` }));
-  const actOpts  = STATS.map(s => ({ key: `act_${s}`,  title: `Action ${s} + 1` }));
+  if (choice) {
+    if (choice.key?.startsWith('crit_')) return buildChosenOption(`CRIT ${choice.key.split('_')[1]} − 1`, lvl, reached);
+    if (choice.key?.startsWith('act_')) return buildChosenOption(`Action ${choice.key.split('_')[1]} + 1`, lvl, reached);
+  }
 
-  [critOpts, actOpts].forEach((opts, gi) => {
-    if (gi > 0) {
-      const or = document.createElement('span');
-      or.className = 'prog-or';
-      or.textContent = 'ou';
-      wrap.appendChild(or);
-    }
-    opts.forEach(opt => wrap.appendChild(buildProgOption(opt, lvl, reached, choice)));
-  });
+  if (!reached) {
+    wrap.appendChild(buildChoiceButton('CRIT − 1', null));
+    const or = document.createElement('span');
+    or.className = 'prog-or';
+    or.textContent = 'ou';
+    wrap.appendChild(or);
+    wrap.appendChild(buildChoiceButton('+1 action', null));
+    return wrap;
+  }
+
+  wrap.appendChild(buildChoiceButton('CRIT − 1', () => {
+    wrap.innerHTML = '';
+    wrap.appendChild(buildStatSelector(lvl, 'crit', 'Choisir le seuil critique'));
+  }));
+
+  const or = document.createElement('span');
+  or.className = 'prog-or';
+  or.textContent = 'ou';
+  wrap.appendChild(or);
+
+  wrap.appendChild(buildChoiceButton('+1 action', () => {
+    wrap.innerHTML = '';
+    wrap.appendChild(buildStatSelector(lvl, 'act', 'Choisir la caractéristique'));
+  }));
 
   return wrap;
 }
