@@ -66,7 +66,7 @@ const CLASS_DATA = {
           desc: "Sur un CRIT, la cible du trappeur est affectée par l'effet saignement. Un saignement inflige à partir du tour suivant 1 dégât par tour qui ignore l'armure. Une cible atteinte de saignement peut-être suivie à la trace et aura beaucoup plus de mal à se camoufler, à moins d'activement effacer ses traces."
         },
         {
-          nom: "Hemorragie",
+          nom: "Hémorragie",
           desc: "Un CRIT sur une cible atteinte de saignement inflige l'effet hémorragie. L'hémorragie inflige 1 dégât par tour (cumulable avec le saignement). Le nombre d'actions par tour de la cible atteinte d'hémorragie est diminué de 2. (si comme vous la cible a 3 actions par tour, une de puissance, une de finesse, une d'esprit, avec l'hémorragie la cible ne peut plus effectuer qu'une seule action, celle de son choix)"
         },
         {
