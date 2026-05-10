@@ -284,6 +284,56 @@
 
 </div>
 
-<script src="arbre.js"></script>
+<script>
+(function loadClassDataThenEngine() {
+  const CLASSES_AUTORISEES = ['forgeron', 'mineur', 'trappeur', 'guerrier'];
+  const params = new URLSearchParams(window.location.search);
+  const classe = params.get('classe');
+
+  if (!CLASSES_AUTORISEES.includes(classe)) {
+    document.querySelector('.container').innerHTML = `
+      <div class="top-nav">
+        <a class="back-link" href="index.html">← Toutes les classes</a>
+        <button class="theme-toggle" onclick="toggleTheme()">☀ Thème clair</button>
+      </div>
+      <header class="header">
+        <div class="class-label">Erreur</div>
+        <h1 class="class-title"><span>Classe inconnue</span></h1>
+        <p class="class-subtitle">
+          La classe demandée n'existe pas ou l'URL est incomplète.
+        </p>
+      </header>
+    `;
+    return;
+  }
+
+  const classScript = document.createElement('script');
+  classScript.src = `${classe}/classe.js`;
+
+  classScript.onload = () => {
+    const engineScript = document.createElement('script');
+    engineScript.src = 'arbre.js';
+    document.body.appendChild(engineScript);
+  };
+
+  classScript.onerror = () => {
+    document.querySelector('.container').innerHTML = `
+      <div class="top-nav">
+        <a class="back-link" href="index.html">← Toutes les classes</a>
+        <button class="theme-toggle" onclick="toggleTheme()">☀ Thème clair</button>
+      </div>
+      <header class="header">
+        <div class="class-label">Erreur</div>
+        <h1 class="class-title"><span>Données introuvables</span></h1>
+        <p class="class-subtitle">
+          Impossible de charger le fichier ${classe}/classe.js.
+        </p>
+      </header>
+    `;
+  };
+
+  document.body.appendChild(classScript);
+})();
+</script>
 </body>
 </html>
