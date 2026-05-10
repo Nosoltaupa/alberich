@@ -2,35 +2,17 @@
 //  MOTEUR DE RENDU — arbre.js
 // ============================================================
 
-// ---- Chargement dynamique de la classe via ?classe=xxx ----
-function getClasseParam() {
-  const params = new URLSearchParams(window.location.search);
-  return params.get('classe');
-}
-
-function loadClasseScript(nom, callback) {
-  const script = document.createElement('script');
-  script.src = `${nom}/classe.js`;
-  script.onload = callback;
-  script.onerror = () => {
-    document.body.innerHTML = `
-      <div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:serif;color:#c8622a;font-size:1.2rem;">
-        Classe introuvable : <strong style="margin-left:.4em">${nom}</strong>
-        &nbsp;— <a href="index.html" style="color:#c9a84c;margin-left:.4em">Retour à l'accueil</a>
-      </div>`;
-  };
-  document.head.appendChild(script);
-}
-
 // ---- État ----
 let playerLevel = 1;
-const unlocked    = {};
-const openCards   = {};
-const progChoices = {};
+const unlocked   = {};   // compétences débloquées
+const openCards  = {};   // encarts ouverts
+const progChoices = {};  // choix de progression : { 2: {type:'stat',value:'PU'}, 4: {type:'crit',value:'FI'}, ... }
 
 const STORAGE_KEY = () => `arbre_${CLASS_DATA.nom.toLowerCase().replace(/\s+/g, '_')}`;
 
-// ---- Niveaux de progression ----
+// ---- Définition des niveaux de progression (commun à toutes les classes) ----
+// type 'stat_pv'  : +1 stat choisie OU +1 PV
+// type 'crit_act' : -1 CRIT sur stat choisie OU +1 action/tour sur stat choisie
 const PROG_LEVELS = {
   1:  { type: 'base' },
   2:  { type: 'stat_pv' },
@@ -51,23 +33,6 @@ const $ = id => document.getElementById(id);
 const canUnlockBranch = (bi, si) => si === 0 || !!unlocked[`${bi}-${si - 1}`];
 const countUnlocked   = () => Object.values(unlocked).filter(Boolean).length;
 const canUnlockMore   = () => countUnlocked() < playerLevel;
-
-// ---- Thème ----
-function toggleTheme() {
-  const html = document.documentElement;
-  const isDark = html.dataset.theme === 'dark';
-  html.dataset.theme = isDark ? 'light' : 'dark';
-  document.querySelector('.theme-toggle').textContent = isDark ? '☾ Thème sombre' : '☀ Thème clair';
-  localStorage.setItem('theme_preference', html.dataset.theme);
-}
-
-function loadTheme() {
-  const saved = localStorage.getItem('theme_preference');
-  if (saved) {
-    document.documentElement.dataset.theme = saved;
-    document.querySelector('.theme-toggle').textContent = saved === 'light' ? '☾ Thème sombre' : '☀ Thème clair';
-  }
-}
 
 // ---- Persistance localStorage ----
 function saveToLocal() {
@@ -139,17 +104,12 @@ function showStatus(msg, type = '', duration = 2000) {
 
 // ---- Init page ----
 function initPage() {
-  const classe = getClasseParam();
   document.title = `${CLASS_DATA.nom} — Arbre de compétences`;
   $('class-article').textContent  = CLASS_DATA.article;
   $('class-name').textContent     = CLASS_DATA.nom;
   $('class-subtitle').textContent = CLASS_DATA.ambiance;
   $('ultimate-title').textContent = CLASS_DATA.ultime.nom;
   $('ultimate-desc').innerHTML    = CLASS_DATA.ultime.desc;
-
-  // Lien retour accueil
-  const backLink = $('back-link');
-  if (backLink) backLink.href = 'index.html';
 }
 
 // ---- Barre de niveau ----
@@ -158,16 +118,19 @@ function renderLevelBar() {
   const s = playerLevel > 1 ? 's' : '';
   $('level-bar').innerHTML =
     '<span class="level-label">Niveau</span>' +
-    Array.from({ length: 10 }, (_, i) =>
-      `<div class="level-pip${i < playerLevel ? ' earned' : ''}" onclick="setLevel(${i + 1})" title="Niveau ${i + 1}"></div>`
-    ).join('') +
+    Array.from({ length: 10 }, (_, i) => {
+      const earned  = i < playerLevel;
+      const current = i === playerLevel - 1;
+      const cls = `level-pip${earned ? ' earned' : ''}${current ? ' current' : ''}`;
+      const label = current ? playerLevel : '';
+      return `<div class="${cls}" onclick="setLevel(${i + 1})" title="Niveau ${i + 1}">${label}</div>`;
+    }).join('') +
     `<span class="level-count">(<strong>${used}</strong>&thinsp;/&thinsp;${playerLevel} compétence${s})</span>`;
   $('class-level').textContent = `— niveau ${playerLevel}`;
 }
 
 // ---- Arbre de compétences ----
 function renderTree() {
-  const classe = getClasseParam() || '';
   const tree = $('tree');
   tree.innerHTML = '';
   const canMore = canUnlockMore();
@@ -178,7 +141,7 @@ function renderTree() {
     col.innerHTML = `
       <div class="branch-header">
         <div class="branch-icon-wrap">
-          <img src="${classe}/branche${bi + 1}.webp" alt="${branch.nom}" onerror="this.style.display='none'">
+          <img src="branche${bi + 1}.webp" alt="${branch.nom}" onerror="this.style.display='none'">
         </div>
         <div class="branch-name">${branch.nom}</div>
       </div>`;
@@ -224,7 +187,7 @@ function renderUltimate() {
   $('ultimate-card').className =
     `ultimate-card${!prereqOk ? ' locked-card' : ''}${isUnlocked ? ' unlocked' : ''}${isOpen ? ' open' : ''}`;
   $('ultimate-sub').textContent = !prereqOk
-    ? `Déblocable au niveau\u00a06 (niveau actuel\u00a0: ${playerLevel})`
+    ? `Lisible — déblocable au niveau\u00a06 (niveau actuel\u00a0: ${playerLevel})`
     : isUnlocked ? 'Débloquée — à définir avec le joueur' : 'Disponible — à définir avec le joueur';
   $('ultimate-detail').className = `ultimate-detail${isOpen ? ' open' : ''}`;
   $('ultimate-actions').innerHTML = isUnlocked
@@ -240,7 +203,7 @@ function renderProgression() {
   for (let lvl = 1; lvl <= 10; lvl++) {
     const def      = PROG_LEVELS[lvl];
     const reached  = lvl <= playerLevel;
-    const choice   = progChoices[lvl];
+    const choice   = progChoices[lvl];  // {optionKey, stat?}
     const chosen   = !!choice;
 
     let levelClass = '';
@@ -251,6 +214,7 @@ function renderProgression() {
     const row = document.createElement('div');
     row.className = `prog-level${levelClass ? ' ' + levelClass : ''}`;
 
+    // Colonne numéro
     row.innerHTML = `
       <div class="prog-num">
         <div class="prog-circle">${lvl}</div>
@@ -284,6 +248,7 @@ function buildStatPvOptions(lvl, reached, choice) {
   const wrap = document.createElement('div');
   wrap.className = 'prog-options';
 
+  // Options : PU, FI, ES, PV
   const options = [
     { key: 'PU', icon: '⚔', title: '+1 Puissance', detail: 'PU +1' },
     { key: 'FI', icon: '🎯', title: '+1 Finesse',   detail: 'FI +1' },
@@ -292,7 +257,11 @@ function buildStatPvOptions(lvl, reached, choice) {
   ];
 
   options.forEach((opt, i) => {
-    if (i === 3) {
+    if (i === 3 && i > 0) {
+      const or = document.createElement('span');
+      or.className = 'prog-or';
+      or.textContent = 'ou';
+      // Insérer le "ou" entre stats et PV
       const orEl = document.createElement('span');
       orEl.className = 'prog-or';
       orEl.textContent = 'ou';
@@ -323,6 +292,7 @@ function buildStatPvOptions(lvl, reached, choice) {
     } else if (reached) {
       btn.onclick = () => makeProgChoice(lvl, { key: opt.key });
     }
+
     wrap.appendChild(btn);
   });
 
@@ -333,6 +303,7 @@ function buildCritActOptions(lvl, reached, choice) {
   const wrap = document.createElement('div');
   wrap.className = 'prog-options';
 
+  // 3 options CRIT + séparateur + 3 options Actions
   const critOpts = STATS.map(s => ({ key: `crit_${s}`, icon: '◈', title: `CRIT ${s} − 1`, detail: `Seuil de critique ${s} abaissé de 1` }));
   const actOpts  = STATS.map(s => ({ key: `act_${s}`,  icon: '◇', title: `Action ${s} + 1`, detail: `+1 action par tour pour ${s}` }));
 
@@ -441,17 +412,7 @@ function renderAll() {
 }
 
 // ---- Point d'entrée ----
-document.addEventListener("DOMContentLoaded", () => {
-  const classe = getClasseParam();
-  if (!classe) {
-    window.location.href = 'index.html';
-    return;
-  }
-  loadClasseScript(classe, () => {
-    loadTheme();
-    initPage();
-    const restored = loadFromLocal();
-    renderAll();
-    if (restored) showStatus('Progression restaurée', 'ok', 2500);
-  });
-});
+initPage();
+const restored = loadFromLocal();
+renderAll();
+if (restored) showStatus('Progression restaurée', 'ok', 2500);
