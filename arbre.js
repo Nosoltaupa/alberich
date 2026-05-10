@@ -8,7 +8,9 @@ const unlocked   = {};   // compétences débloquées
 const openCards  = {};   // encarts ouverts
 const progChoices = {};  // choix de progression : { 2: {type:'stat',value:'PU'}, 4: {type:'crit',value:'FI'}, ... }
 
-const STORAGE_KEY = () => `arbre_${CLASS_DATA.nom.toLowerCase().replace(/\s+/g, '_')}`;
+const params = new URLSearchParams(window.location.search);
+const CLASS_ID = params.get('classe');
+const STORAGE_KEY = () => `arbre_${CLASS_ID}`;
 
 // ---- Définition des niveaux de progression (commun à toutes les classes) ----
 // type 'stat_pv'  : +1 stat choisie OU +1 PV
@@ -34,9 +36,9 @@ const canUnlockBranch = (bi, si) => si === 0 || !!unlocked[`${bi}-${si - 1}`];
 const countUnlocked   = () => Object.values(unlocked).filter(Boolean).length;
 const canUnlockMore   = () => countUnlocked() < playerLevel;
 
-// ---- Va chercher correctement dans les dossiers de classe ----
-const params = new URLSearchParams(window.location.search);
-const CLASS_ID = params.get('classe');
+// // ---- Va chercher correctement dans les dossiers de classe ----
+// const params = new URLSearchParams(window.location.search);
+// const CLASS_ID = params.get('classe');
 
 // ---- Persistance localStorage ----
 function saveToLocal() {
