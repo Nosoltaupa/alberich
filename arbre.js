@@ -206,7 +206,7 @@ function renderUltimate() {
     `ultimate-card${!prereqOk ? ' locked-card' : ''}${isUnlocked ? ' unlocked' : ''}${isOpen ? ' open' : ''}`;
   $('ultimate-sub').textContent = !prereqOk
     ? `Lisible — déblocable au niveau\u00a06 (niveau actuel\u00a0: ${playerLevel})`
-    : isUnlocked ? 'Débloquée — à définir avec le joueur' : 'Disponible — à définir avec le joueur';
+    : isUnlocked ? 'Débloquée' : 'Disponible — à définir avec le MJ';
   $('ultimate-detail').className = `ultimate-detail${isOpen ? ' open' : ''}`;
   $('ultimate-actions').innerHTML = isUnlocked
     ? `<button class="btn revoke" onclick="event.stopPropagation();revokeUltimate()">Révoquer</button>`
