@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feuille de personnage</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root,
+  html[data-theme="dark"] {
+    --bg:           #0f0d0b;
+    --bg2:          #1a1612;
+    --bg3:          #231f1a;
+    --border:       #3a3026;
+    --border-light: #52463a;
+    --ember:        #c8622a;
+    --ember-light:  #e07840;
+    --gold:         #c9a84c;
+    --gold-light:   #e2c06a;
+    --text:         #e8dfd0;
+    --text-muted:   #8a7d6e;
+    --text-dim:     #5a5045;
+    --bille-empty:  #2a2318;
+    --bille-fill:   #c8622a;
+    --bille-border: #52463a;
+    --die-active:   #c9a84c;
+    --die-inactive: #2a2318;
+    --die-border-a: #c9a84c;
+    --die-border-i: #3a3026;
+    --section-bg:   #16120e;
+  }
+
+  html[data-theme="light"] {
+    --bg:           #f5f0e8;
+    --bg2:          #ede6d8;
+    --bg3:          #e2d9c8;
+    --border:       #c8b89a;
+    --border-light: #a89070;
+    --ember:        #a84e1a;
+    --ember-light:  #c06020;
+    --gold:         #8a6820;
+    --gold-light:   #6a4e10;
+    --text:         #2a2018;
+    --text-muted:   #5a4a30;
+    --text-dim:     #8a7a60;
+    --bille-empty:  #ddd4c0;
+    --bille-fill:   #a84e1a;
+    --bille-border: #a89070;
+    --die-active:   #8a6820;
+    --die-inactive: #ddd4c0;
+    --die-border-a: #8a6820;
+    --die-border-i: #c8b89a;
+    --section-bg:   #ede6d8;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Crimson Pro', Georgia, serif;
+    font-size: 16px;
+    min-height: 100vh;
+    padding: 2rem 1.5rem 4rem;
+    transition: background .3s, color .3s;
+  }
+
+  .container { max-width: 680px; margin: 0 auto; position: relative; }
+
+  /* ---- Nav haut ---- */
+  .top-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+  .back-link {
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    text-decoration: none;
+    border: 1px solid var(--border-light);
+    padding: 5px 12px;
+    border-radius: 2px;
+    transition: all .15s;
+  }
+  .back-link:hover { border-color: var(--ember); color: var(--ember-light); }
+  .theme-toggle {
+    font-family: 'Cinzel', serif; font-size: 9px;
+    letter-spacing: .12em; text-transform: uppercase;
+    padding: 5px 12px; border-radius: 2px; cursor: pointer;
+    border: 1px solid var(--border-light); background: transparent;
+    color: var(--text-muted); transition: all .15s;
+  }
+  .theme-toggle:hover { border-color: var(--ember); color: var(--ember-light); }
+
+  /* ---- En-tête ---- */
+  .header {
+    text-align: center; margin-bottom: 1.5rem;
+    padding-bottom: 1.2rem;
+  }
+  .sheet-label {
+    font-family: 'Cinzel', serif; font-size: 10px;
+    letter-spacing: .22em; color: var(--ember);
+    text-transform: uppercase; margin-bottom: .8rem;
+  }
+  .editable {
+    background: transparent; border: none;
+    color: var(--text); font-family: 'Cinzel', serif;
+    text-align: center; outline: none; width: 100%;
+  }
+  .editable.name-field  { font-size: 1.8rem; font-weight: 700; letter-spacing: .06em; margin-bottom: .2rem; }
+  .editable.class-field { font-size: .9rem; letter-spacing: .2em; color: var(--text-muted); }
+  .editable::placeholder { color: var(--text-dim); }
+
+  /* ---- Séparateur ---- */
+  .section-divider { display: flex; align-items: center; gap: 1rem; margin: 1.4rem 0 1rem; }
+  .section-divider::before, .section-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .section-divider span {
+    font-family: 'Cinzel', serif; font-size: 9px;
+    letter-spacing: .18em; color: var(--gold);
+    text-transform: uppercase; white-space: nowrap;
+  }
+
+  /* ---- Billes génériques ---- */
+  .bille {
+    width: 20px; height: 20px; border-radius: 50%;
+    border: 1.5px solid var(--bille-border);
+    background: var(--bille-empty);
+    cursor: pointer;
+    transition: background .15s, border-color .15s, transform .1s;
+    display: inline-block; flex-shrink: 0;
+  }
+  .bille.filled { background: var(--bille-fill); border-color: var(--ember-light); }
+  .bille.fixed  { cursor: default; }
+  .bille.locked { cursor: default; opacity: .35; }
+  .bille:not(.locked):not(.fixed):hover { transform: scale(1.18); border-color: var(--ember-light); }
+  .bille-niveau { width: 22px; height: 22px; }
+  .bille-niveau.filled { background: var(--gold); border-color: var(--gold-light); }
+
+  /* ---- NIVEAU ---- */
+  .niveau-block { display: flex; flex-direction: column; align-items: center; gap: .6rem; }
+  .niveau-label { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: .18em; color: var(--gold); text-transform: uppercase; }
+  .niveau-billes { display: flex; gap: 8px; }
+  .pts-dispo { font-family: 'Cinzel', serif; font-size: 11px; color: var(--ember-light); letter-spacing: .08em; min-height: 18px; text-align: center; }
+  .niveau-hint { font-size: 12px; color: var(--text-dim); font-style: italic; }
+
+  /* ---- GRILLE CARACTÉRISTIQUES ---- */
+  .carac-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+  .carac-col {
+    background: var(--section-bg); border: 1px solid var(--border);
+    border-radius: 4px; padding: .9rem .6rem 1rem;
+    display: flex; flex-direction: column; align-items: center; gap: .9rem;
+  }
+  .carac-name {
+    font-family: 'Cinzel', serif; font-size: 14px;
+    font-weight: 700; letter-spacing: .1em; color: var(--gold-light);
+  }
+  .billes-row { display: flex; gap: 6px; align-items: center; }
+
+  /* ---- CRIT (dés) ---- */
+  .crit-block { display: flex; flex-direction: column; align-items: center; gap: 5px; width: 100%; }
+  .block-label {
+    font-family: 'Cinzel', serif; font-size: 8px;
+    letter-spacing: .15em; color: var(--text-dim); text-transform: uppercase;
+  }
+  .crit-dice { display: flex; gap: 8px; justify-content: center; }
+  .die-wrap { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  .die-face {
+    width: 30px; height: 30px; border-radius: 5px;
+    border: 1.5px solid var(--die-border-i);
+    background: var(--die-inactive);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: background .15s, border-color .15s, transform .1s;
+  }
+  .die-face.active { background: var(--die-active); border-color: var(--die-border-a); }
+  .die-face.fixed  { cursor: default; }
+  .die-face.locked { cursor: default; opacity: .35; }
+  .die-face:not(.locked):not(.fixed):hover { transform: scale(1.1); border-color: var(--ember-light); }
+  .die-face svg { width: 20px; height: 20px; }
+  .die-dot { transition: fill .15s; }
+  .die-face.active .die-dot { fill: var(--bg); }
+  .die-face:not(.active) .die-dot { fill: var(--text-dim); }
+  .die-val { font-family: 'Cinzel', serif; font-size: 8px; color: var(--text-dim); }
+  .die-face.active ~ .die-val { color: var(--gold); }
+
+  /* ---- ACTIONS / TOUR ---- */
+  .actions-block { display: flex; flex-direction: column; align-items: center; gap: 5px; width: 100%; }
+
+  /* ---- PV (cœurs) ---- */
+  .pv-block { display: flex; flex-direction: column; align-items: center; gap: .7rem; }
+  .hearts-row { display: flex; gap: 7px; flex-wrap: wrap; justify-content: center; align-items: center; }
+  .heart {
+    font-size: 24px; cursor: pointer; line-height: 1; user-select: none;
+    transition: transform .15s, opacity .15s, filter .15s;
+  }
+  .heart.full  { color: #c0332a; filter: drop-shadow(0 0 3px rgba(192,51,42,.45)); }
+  .heart.lost  { color: #555; opacity: .28; filter: none; }
+  .heart:hover { transform: scale(1.2); }
+  .add-pv {
+    width: 28px; height: 28px; border-radius: 50%;
+    border: 1.5px dashed var(--border-light); background: transparent;
+    color: var(--text-dim); cursor: pointer; font-size: 18px;
+    display: flex; align-items: center; justify-content: center;
+    transition: border-color .15s, color .15s, transform .1s;
+  }
+  .add-pv:hover { border-color: var(--ember); color: var(--ember-light); transform: scale(1.1); }
+  .add-pv.locked { opacity: .28; cursor: not-allowed; pointer-events: none; }
+
+  /* ---- Bouton reset ---- */
+  .btn-reset {
+    font-family: 'Cinzel', serif; font-size: 9px;
+    letter-spacing: .12em; text-transform: uppercase;
+    padding: 5px 14px; border-radius: 2px; cursor: pointer;
+    border: 1px solid var(--border); background: transparent;
+    color: var(--text-dim); transition: all .15s;
+    display: block; margin: 2rem auto 0;
+  }
+  .btn-reset:hover { border-color: #a04040; color: #c06060; }
+
+  .footer-note { margin-top: 2rem; text-align: center; font-size: 12px; color: var(--text-dim); font-style: italic; line-height: 1.7; }
+
+  @media (max-width: 480px) { .carac-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="top-nav">
+    <a class="back-link" href="index.html">← Accueil</a>
+    <button class="theme-toggle" onclick="toggleTheme()">☀ Thème clair</button>
+  </div>
+
+  <header class="header">
+    <div class="sheet-label">Feuille de personnage</div>
+    <input class="editable name-field"  id="field-nom"    type="text" placeholder="Nom du personnage" autocomplete="off">
+    <input class="editable class-field" id="field-classe" type="text" placeholder="Classe" autocomplete="off">
+  </header>
+
+  <div class="section-divider"><span>✦ Niveau ✦</span></div>
+  <div class="niveau-block">
+    <div class="niveau-billes" id="billes-niveau"></div>
+    <div class="pts-dispo" id="pts-dispo"></div>
+    <div class="niveau-hint">Cliquez sur la prochaine bille pour monter de niveau</div>
+  </div>
+
+  <div class="section-divider"><span>✦ Caractéristiques ✦</span></div>
+  <div class="carac-grid" id="carac-grid"></div>
+
+  <div class="section-divider"><span>✦ Points de vie ✦</span></div>
+  <div class="pv-block">
+    <div class="hearts-row" id="hearts-row"></div>
+  </div>
+
+  <button class="btn-reset" id="btn-reset" onclick="handleReset()">↺ Réinitialiser la feuille</button>
+
+  <p class="footer-note">
+    Montez de niveau · distribuez vos points sur les caractéristiques, le CRIT, les actions ou les PV<br>
+    Cliquez sur un cœur pour indiquer une blessure · cliquez à nouveau pour le récupérer
+  </p>
+
+</div>
+<script>
+// ============================================================
+//  CONSTANTES
+// ============================================================
+const STORAGE_KEY = 'feuille_personnage_v1';
+const MAX_VAL  = 5;
+const MAX_ACT  = 3;
+const MAX_LVL  = 10;
+const BASE_PV  = 6;
+const START_PTS = 6;   // points offerts à la création (niveau 0)
+const CARACS   = ['PU', 'FI', 'ES'];
+const CRIT_FACES = [6, 5, 4]; // fi=0 toujours actif
+
+// ---- SVG faces de dé ----
+const DIE_DOTS = {
+  4: [[.3,.3],[.7,.3],[.3,.7],[.7,.7]],
+  5: [[.3,.3],[.7,.3],[.5,.5],[.3,.7],[.7,.7]],
+  6: [[.3,.25],[.7,.25],[.3,.5],[.7,.5],[.3,.75],[.7,.75]],
+};
+function dieSVG(n) {
+  const circles = (DIE_DOTS[n]||[]).map(([cx,cy])=>
+    `<circle class="die-dot" cx="${cx*20}" cy="${cy*20}" r="2.3"/>`).join('');
+  return `<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">${circles}</svg>`;
+}
+
+// ============================================================
+//  ÉTAT
+// ============================================================
+function defaultState() {
+  return {
+    nom: '', classe: '',
+    niveau: 1,
+    ptsDispos: START_PTS,
+    carac: Object.fromEntries(CARACS.map(c => [c, { val: 1, act: 1, crit: [true, false, false] }])),
+    pv: Array.from({ length: BASE_PV }, () => ({ lost: false })),
+  };
+}
+
+let state = defaultState();
+const $ = id => document.getElementById(id);
+
+// ============================================================
+//  PERSISTANCE
+// ============================================================
+function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+function load() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) { state = JSON.parse(raw); return true; }
+  } catch {}
+  return false;
+}
+
+// ============================================================
+//  THÈME
+// ============================================================
+function toggleTheme() {
+  const isDark = document.documentElement.dataset.theme === 'dark';
+  document.documentElement.dataset.theme = isDark ? 'light' : 'dark';
+  document.querySelector('.theme-toggle').textContent = isDark ? '☾ Thème sombre' : '☀ Thème clair';
+  localStorage.setItem('theme_pref_feuille', document.documentElement.dataset.theme);
+}
+function loadTheme() {
+  const t = localStorage.getItem('theme_pref_feuille') || 'dark';
+  document.documentElement.dataset.theme = t;
+  document.querySelector('.theme-toggle').textContent = t === 'light' ? '☾ Thème sombre' : '☀ Thème clair';
+}
+
+// ============================================================
+//  HELPERS
+// ============================================================
+const canSpend = () => state.ptsDispos > 0;
+
+// ============================================================
+//  RENDU — NIVEAU
+// ============================================================
+function renderNiveau() {
+  const row = $('billes-niveau');
+  row.innerHTML = '';
+  for (let i = 0; i < MAX_LVL; i++) {
+    const filled = i < state.niveau;
+    const isNext = i === state.niveau;
+    const b = document.createElement('div');
+    b.className = `bille bille-niveau${filled ? ' filled' : ''}${!isNext && !filled ? ' locked' : ''}`;
+    b.title = `Niveau ${i + 1}`;
+    if (isNext && state.niveau < MAX_LVL) b.onclick = () => { state.niveau++; state.ptsDispos++; save(); renderAll(); };
+    row.appendChild(b);
+  }
+  $('pts-dispo').textContent = state.ptsDispos > 0
+    ? `${state.ptsDispos} point${state.ptsDispos > 1 ? 's' : ''} à distribuer`
+    : '';
+}
+
+// ============================================================
+//  RENDU — CARACTÉRISTIQUES
+// ============================================================
+function renderCaracs() {
+  const grid = $('carac-grid');
+  grid.innerHTML = '';
+
+  CARACS.forEach(c => {
+    const col = document.createElement('div');
+    col.className = 'carac-col';
+    col.innerHTML = `<div class="carac-name">${c}</div>`;
+
+    // --- Valeur (5 billes, min 1 toujours remplie) ---
+    const valBlock = document.createElement('div');
+    valBlock.className = 'billes-row';
+    for (let i = 0; i < MAX_VAL; i++) {
+      const filled = i < state.carac[c].val;
+      const isMin  = i === 0;
+      const cost   = i + 1 - state.carac[c].val; // points nécessaires pour atteindre cette bille
+      const canReach = !filled && cost > 0 && state.ptsDispos >= cost;
+      const b = document.createElement('div');
+
+      if (isMin && filled) {
+        b.className = 'bille filled fixed';
+        b.title = `${c} minimum (1)`;
+      } else if (filled) {
+        b.className = 'bille filled';
+        b.title = `Retirer jusqu'ici (${c} → ${i}, +${state.carac[c].val - i} pt${state.carac[c].val - i > 1 ? 's' : ''})`;
+        b.onclick = () => clickValRemoveTo(c, i);
+      } else if (canReach) {
+        b.className = 'bille';
+        b.title = cost === 1 ? `+1 ${c}` : `Remplir jusqu'ici (${cost} pts)`;
+        b.onclick = () => clickValAddTo(c, i + 1);
+      } else {
+        b.className = 'bille locked';
+        b.title = !canSpend() ? 'Montez de niveau pour débloquer' : `Pas assez de points (${cost} nécessaire${cost > 1 ? 's' : ''})`;
+      }
+      valBlock.appendChild(b);
+    }
+    col.appendChild(valBlock);
+
+    // --- CRIT (3 faces de dé) ---
+    const critBlock = document.createElement('div');
+    critBlock.className = 'crit-block';
+    critBlock.innerHTML = '<div class="block-label">Critique</div>';
+    const diceRow = document.createElement('div');
+    diceRow.className = 'crit-dice';
+    CRIT_FACES.forEach((face, fi) => {
+      const active = state.carac[c].crit[fi];
+      const isFixed = fi === 0;
+      const wrap = document.createElement('div');
+      wrap.className = 'die-wrap';
+      const die = document.createElement('div');
+      die.innerHTML = dieSVG(face);
+
+      const prereqOk = fi === 0 || fi === 1 || state.carac[c].crit[fi - 1]; // dé 4 requiert dé 5
+
+      if (isFixed) {
+        die.className = `die-face active fixed`;
+        die.title = `CRIT ${c} : ${face} (de base)`;
+      } else if (active) {
+        die.className = 'die-face active';
+        die.title = `Désactiver CRIT ${face} pour ${c}`;
+        die.onclick = () => clickCritRemove(c, fi);
+      } else if (!prereqOk) {
+        die.className = 'die-face locked';
+        die.title = `Activez d'abord le CRIT 5 pour ${c}`;
+      } else if (canSpend()) {
+        die.className = 'die-face';
+        die.title = `Activer CRIT ${face} pour ${c} (1 point)`;
+        die.onclick = () => clickCritAdd(c, fi);
+      } else {
+        die.className = 'die-face locked';
+        die.title = 'Montez de niveau pour débloquer';
+      }
+
+      const lbl = document.createElement('div');
+      lbl.className = 'die-val';
+      lbl.textContent = face;
+      wrap.appendChild(die);
+      wrap.appendChild(lbl);
+      diceRow.appendChild(wrap);
+    });
+    critBlock.appendChild(diceRow);
+    col.appendChild(critBlock);
+
+    // --- Actions/tour (3 billes, min 1 fixe) ---
+    const actBlock = document.createElement('div');
+    actBlock.className = 'actions-block';
+    actBlock.innerHTML = '<div class="block-label">Actions / tour</div>';
+    const actRow = document.createElement('div');
+    actRow.className = 'billes-row';
+    for (let i = 0; i < MAX_ACT; i++) {
+      const filled   = i < state.carac[c].act;
+      const isMin    = i === 0;
+      const cost     = i + 1 - state.carac[c].act;
+      const canReach = !filled && cost > 0 && state.ptsDispos >= cost;
+      const b = document.createElement('div');
+
+      if (isMin) {
+        b.className = 'bille filled fixed';
+        b.title = `${c} : 1 action/tour (de base)`;
+      } else if (filled) {
+        b.className = 'bille filled';
+        b.title = `Retirer jusqu'ici (${c} → ${i} action${i > 1 ? 's' : ''}/tour, +${state.carac[c].act - i} pt${state.carac[c].act - i > 1 ? 's' : ''})`;
+        b.onclick = () => clickActRemoveTo(c, i);
+      } else if (canReach) {
+        b.className = 'bille';
+        b.title = cost === 1 ? `+1 action ${c}/tour` : `Remplir jusqu'ici (${cost} pts)`;
+        b.onclick = () => clickActAddTo(c, i + 1);
+      } else {
+        b.className = 'bille locked';
+        b.title = !canSpend() ? 'Montez de niveau pour débloquer' : `Pas assez de points (${cost} nécessaire${cost > 1 ? 's' : ''})`;
+      }
+      actRow.appendChild(b);
+    }
+    actBlock.appendChild(actRow);
+    col.appendChild(actBlock);
+
+    grid.appendChild(col);
+  });
+}
+
+// ============================================================
+//  ACTIONS — CARACTÉRISTIQUES
+// ============================================================
+function clickValAddTo(c, targetVal) {
+  const cost = targetVal - state.carac[c].val;
+  if (cost <= 0 || targetVal > MAX_VAL || state.ptsDispos < cost) return;
+  state.carac[c].val = targetVal;
+  state.ptsDispos -= cost;
+  save(); renderAll();
+}
+// Révoque jusqu'à la bille i (incluse), rembourse tous les points au-dessus
+function clickValRemoveTo(c, i) {
+  const removed = state.carac[c].val - i; // nombre de billes à enlever (val passe à i)
+  if (i < 1) return;
+  state.carac[c].val = i;
+  state.ptsDispos += removed;
+  save(); renderAll();
+}
+function clickActAddTo(c, targetAct) {
+  const cost = targetAct - state.carac[c].act;
+  if (cost <= 0 || targetAct > MAX_ACT || state.ptsDispos < cost) return;
+  state.carac[c].act = targetAct;
+  state.ptsDispos -= cost;
+  save(); renderAll();
+}
+// Révoque jusqu'à la bille i (incluse), rembourse tous les points au-dessus
+function clickActRemoveTo(c, i) {
+  const removed = state.carac[c].act - i;
+  if (i < 1) return;
+  state.carac[c].act = i;
+  state.ptsDispos += removed;
+  save(); renderAll();
+}
+function clickCritAdd(c, fi) { if (!canSpend()) return; state.carac[c].crit[fi] = true; state.ptsDispos--; save(); renderAll(); }
+function clickCritRemove(c, fi) {
+  if (fi === 0) return;
+  state.carac[c].crit[fi] = false;
+  // Si on révoque le dé 5 (fi=1), révoquer aussi le dé 4 (fi=2) s'il était actif
+  if (fi === 1 && state.carac[c].crit[2]) {
+    state.carac[c].crit[2] = false;
+    state.ptsDispos++;
+  }
+  state.ptsDispos++;
+  save(); renderAll();
+}
+
+// ============================================================
+//  RENDU — PV
+// ============================================================
+function renderPV() {
+  const row = $('hearts-row');
+  row.innerHTML = '';
+  state.pv.forEach((h, i) => {
+    const el = document.createElement('span');
+    el.className = `heart ${h.lost ? 'lost' : 'full'}`;
+    el.textContent = '♥';
+    el.title = h.lost ? 'Blessure — cliquer pour récupérer' : 'PV — cliquer pour perdre';
+    el.onclick = () => { state.pv[i].lost = !state.pv[i].lost; save(); renderPV(); };
+    row.appendChild(el);
+  });
+  // Bouton +PV
+  const btn = document.createElement('div');
+  btn.className = `add-pv${!canSpend() ? ' locked' : ''}`;
+  btn.textContent = '+';
+  btn.title = canSpend() ? 'Ajouter 1 PV (1 point)' : 'Montez de niveau pour ajouter des PV';
+  btn.onclick = () => { if (!canSpend()) return; state.pv.push({ lost: false }); state.ptsDispos--; save(); renderAll(); };
+  row.appendChild(btn);
+}
+
+// ============================================================
+//  CHAMPS TEXTE
+// ============================================================
+function initFields() {
+  const nom = $('field-nom'), cls = $('field-classe');
+  nom.value = state.nom; cls.value = state.classe;
+  nom.oninput = () => { state.nom = nom.value; save(); };
+  cls.oninput = () => { state.classe = cls.value; save(); };
+}
+
+// ============================================================
+//  RESET — confirmation en deux clics
+// ============================================================
+let resetPending = false;
+let resetTimer   = null;
+function handleReset() {
+  const btn = $('btn-reset');
+  if (!resetPending) {
+    resetPending = true;
+    btn.textContent = '⚠ Confirmer la réinitialisation ?';
+    btn.style.borderColor = '#a04040';
+    btn.style.color = '#c06060';
+    resetTimer = setTimeout(() => {
+      resetPending = false;
+      btn.textContent = '↺ Réinitialiser la feuille';
+      btn.style.borderColor = '';
+      btn.style.color = '';
+    }, 3000);
+  } else {
+    clearTimeout(resetTimer);
+    resetPending = false;
+    state = defaultState(); save(); initFields(); renderAll();
+    btn.textContent = '↺ Réinitialiser la feuille';
+    btn.style.borderColor = '';
+    btn.style.color = '';
+  }
+}
+
+// ============================================================
+//  RENDU GLOBAL + POINT D'ENTRÉE
+// ============================================================
+function renderAll() { renderNiveau(); renderCaracs(); renderPV(); }
+
+loadTheme();
+load();
+initFields();
+renderAll();
+</script>
+</body>
+</html>
