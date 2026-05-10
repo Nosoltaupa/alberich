@@ -117,16 +117,28 @@ function renderLevelBar() {
   const used = countUnlocked();
   const s = playerLevel > 1 ? 's' : '';
   $('level-bar').innerHTML =
-    '<span class="level-label">Niveau</span>' +
-    Array.from({ length: 10 }, (_, i) => {
-      const earned  = i < playerLevel;
-      const current = i === playerLevel - 1;
-      const cls = `level-pip${earned ? ' earned' : ''}${current ? ' current' : ''}`;
-      const label = current ? playerLevel : '';
-      return `<div class="${cls}" onclick="setLevel(${i + 1})" title="Niveau ${i + 1}">${label}</div>`;
-    }).join('') +
-    `<span class="level-count">(<strong>${used}</strong>&thinsp;/&thinsp;${playerLevel} compétence${s})</span>`;
-  $('class-level').textContent = `— niveau ${playerLevel}`;
+  '<span class="level-label">Niveau</span>' +
+  Array.from({ length: 10 }, (_, i) => {
+    const level = i + 1;
+    const earned = level <= playerLevel;
+    const current = level === playerLevel;
+
+    const cls = [
+      'level-pip',
+      earned ? 'earned' : '',
+      current ? 'current' : ''
+    ].join(' ');
+
+    return `
+      <div
+        class="${cls}"
+        onclick="setLevel(${level})"
+        title="Niveau ${level}">
+        ${level}
+      </div>
+    `;
+  }).join('') +
+  `<span class="level-count">(<strong>${used}</strong>&thinsp;/&thinsp;${playerLevel} compétence${s})</span>`;
 }
 
 // ---- Arbre de compétences ----
