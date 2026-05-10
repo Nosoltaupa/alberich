@@ -58,8 +58,19 @@
   /* ---- Barre de niveau ---- */
   .level-bar { display: flex; align-items: center; justify-content: center; gap: .5rem; margin-bottom: 2rem; flex-wrap: wrap; }
   .level-label { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: .15em; color: var(--text-muted); text-transform: uppercase; margin-right: .4rem; }
-  .level-pip { width: 28px; height: 6px; border-radius: 2px; background: var(--bg3); border: 1px solid var(--border); cursor: pointer; transition: background .2s, border-color .2s; }
+  .level-pip {
+    width: 28px; height: 6px; border-radius: 2px;
+    background: var(--bg3); border: 1px solid var(--border);
+    cursor: pointer; transition: background .2s, border-color .2s, width .2s, height .2s, border-radius .2s;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Cinzel', serif; font-size: 0px; font-weight: 600; color: transparent;
+  }
   .level-pip.earned { background: var(--ember); border-color: var(--ember-light); }
+  .level-pip.current {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--ember); border-color: var(--ember-light);
+    font-size: 9px; color: #fff;
+  }
   .level-pip:hover  { border-color: var(--ember-light); }
   .level-count { font-size: 13px; color: var(--text-muted); margin-left: .6rem; }
   .level-count strong { color: var(--ember-light); }
