@@ -36,10 +36,6 @@ const canUnlockBranch = (bi, si) => si === 0 || !!unlocked[`${bi}-${si - 1}`];
 const countUnlocked   = () => Object.values(unlocked).filter(Boolean).length;
 const canUnlockMore   = () => countUnlocked() < playerLevel;
 
-// // ---- Va chercher correctement dans les dossiers de classe ----
-// const params = new URLSearchParams(window.location.search);
-// const CLASS_ID = params.get('classe');
-
 // ---- Persistance localStorage ----
 function saveToLocal() {
   try {
@@ -232,7 +228,6 @@ function renderProgression() {
     const row = document.createElement('div');
     row.className = `prog-level${levelClass ? ' ' + levelClass : ''}`;
 
-    // Colonne numéro
     row.innerHTML = `
       <div class="prog-num">
         <div class="prog-circle">${lvl}</div>
@@ -262,56 +257,50 @@ function renderProgression() {
   }
 }
 
+function buildProgOption(opt, lvl, reached, choice) {
+  const btn = document.createElement('div');
+  btn.className = 'prog-option';
+  btn.innerHTML = `<span class="prog-option-title">${opt.title}</span>`;
+
+  if (choice) {
+    if (choice.key === opt.key) {
+      btn.classList.add('chosen');
+      if (reached) {
+        const rev = document.createElement('button');
+        rev.className = 'prog-revoke';
+        rev.textContent = '↩ annuler';
+        rev.onclick = e => { e.stopPropagation(); revokeProgChoice(lvl); };
+        btn.appendChild(rev);
+      }
+    } else {
+      btn.classList.add('unchosen');
+    }
+  } else if (reached) {
+    btn.onclick = () => makeProgChoice(lvl, { key: opt.key });
+  }
+
+  return btn;
+}
+
 function buildStatPvOptions(lvl, reached, choice) {
   const wrap = document.createElement('div');
   wrap.className = 'prog-options';
 
-  // Options : PU, FI, ES, PV
   const options = [
-    { key: 'PU', icon: '⚔', title: '+1 Puissance', detail: 'PU +1' },
-    { key: 'FI', icon: '🎯', title: '+1 Finesse',   detail: 'FI +1' },
-    { key: 'ES', icon: '✦',  title: '+1 Esprit',    detail: 'ES +1' },
-    { key: 'PV', icon: '♥',  title: '+1 Point de vie', detail: 'PV +1' },
+    { key: 'PU', title: '+1 PU' },
+    { key: 'FI', title: '+1 FI' },
+    { key: 'ES', title: '+1 ES' },
+    { key: 'PV', title: '+1 ♥' },
   ];
 
   options.forEach((opt, i) => {
-    if (i === 3 && i > 0) {
-      const or = document.createElement('span');
-      or.className = 'prog-or';
-      or.textContent = 'ou';
-      // Insérer le "ou" entre stats et PV
+    if (i === 3) {
       const orEl = document.createElement('span');
       orEl.className = 'prog-or';
       orEl.textContent = 'ou';
       wrap.appendChild(orEl);
     }
-    const btn = document.createElement('div');
-    btn.className = 'prog-option';
-    btn.innerHTML = `
-      <span class="prog-option-icon">${opt.icon}</span>
-      <span class="prog-option-text">
-        <span class="prog-option-title">${opt.title}</span>
-        <span class="prog-option-detail">${opt.detail}</span>
-      </span>`;
-
-    if (choice) {
-      if (choice.key === opt.key) {
-        btn.classList.add('chosen');
-        if (reached) {
-          const rev = document.createElement('button');
-          rev.className = 'prog-revoke';
-          rev.textContent = '↩ annuler';
-          rev.onclick = e => { e.stopPropagation(); revokeProgChoice(lvl); };
-          btn.appendChild(rev);
-        }
-      } else {
-        btn.classList.add('unchosen');
-      }
-    } else if (reached) {
-      btn.onclick = () => makeProgChoice(lvl, { key: opt.key });
-    }
-
-    wrap.appendChild(btn);
+    wrap.appendChild(buildProgOption(opt, lvl, reached, choice));
   });
 
   return wrap;
@@ -321,50 +310,17 @@ function buildCritActOptions(lvl, reached, choice) {
   const wrap = document.createElement('div');
   wrap.className = 'prog-options';
 
-  // 3 options CRIT + séparateur + 3 options Actions
-  const critOpts = STATS.map(s => ({ key: `crit_${s}`, icon: '◈', title: `CRIT ${s} − 1`, detail: `Seuil de critique ${s} abaissé de 1` }));
-  const actOpts  = STATS.map(s => ({ key: `act_${s}`,  icon: '◇', title: `Action ${s} + 1`, detail: `+1 action par tour pour ${s}` }));
+  const critOpts = STATS.map(s => ({ key: `crit_${s}`, title: `CRIT ${s} − 1` }));
+  const actOpts  = STATS.map(s => ({ key: `act_${s}`,  title: `Action ${s} + 1` }));
 
-  const allGroups = [
-    { label: 'Abaisser un seuil critique', opts: critOpts },
-    { label: 'Gagner une action par tour', opts: actOpts },
-  ];
-
-  allGroups.forEach((group, gi) => {
+  [critOpts, actOpts].forEach((opts, gi) => {
     if (gi > 0) {
       const or = document.createElement('span');
       or.className = 'prog-or';
       or.textContent = 'ou';
       wrap.appendChild(or);
     }
-    group.opts.forEach(opt => {
-      const btn = document.createElement('div');
-      btn.className = 'prog-option';
-      btn.innerHTML = `
-        <span class="prog-option-icon">${opt.icon}</span>
-        <span class="prog-option-text">
-          <span class="prog-option-title">${opt.title}</span>
-          <span class="prog-option-detail">${opt.detail}</span>
-        </span>`;
-
-      if (choice) {
-        if (choice.key === opt.key) {
-          btn.classList.add('chosen');
-          if (reached) {
-            const rev = document.createElement('button');
-            rev.className = 'prog-revoke';
-            rev.textContent = '↩ annuler';
-            rev.onclick = e => { e.stopPropagation(); revokeProgChoice(lvl); };
-            btn.appendChild(rev);
-          }
-        } else {
-          btn.classList.add('unchosen');
-        }
-      } else if (reached) {
-        btn.onclick = () => makeProgChoice(lvl, { key: opt.key });
-      }
-      wrap.appendChild(btn);
-    });
+    opts.forEach(opt => wrap.appendChild(buildProgOption(opt, lvl, reached, choice)));
   });
 
   return wrap;
