@@ -18,6 +18,7 @@
     --die-border-a: #c9a84c;
     --die-border-i: #3a3026;
     --section-bg:   #16120e;
+    --prog-done:    #2a2010;
   }
   [data-theme="light"] {
     --bille-empty:  #ddd4c0;
@@ -28,6 +29,7 @@
     --die-border-a: #8a6820;
     --die-border-i: #c8b89a;
     --section-bg:   #ede6d8;
+    --prog-done:    #d8ceb0;
   }
 
   body { padding: 2rem 1.5rem 4rem; }
@@ -66,18 +68,39 @@
   .bille.locked { cursor: default; opacity: .35; }
   .bille:not(.locked):not(.fixed):hover { transform: scale(1.18); border-color: var(--ember-light); }
   .bille-niveau {
-    width: 22px; height: 22px;
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Cinzel', serif; font-size: 9px; font-weight: 600;
-    color: transparent;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    font-weight: 600;
+
+    color: var(--text-dim);
+
+    transition:
+      background .2s,
+      border-color .2s,
+      color .2s,
+      transform .15s;
   }
-  .bille-niveau.filled { background: var(--gold); border-color: var(--gold-light); }
-  .bille-niveau.current { background: var(--gold); border-color: var(--gold-light); color: var(--bg); }
+  .bille-niveau:hover { border-color: var(--ember-light); transform: scale(1.08); }
+  .bille-niveau.filled { background: var(--prog-done); border-color: var(--ember); color: var(--ember-light); }
+  .bille-niveau.current { background: var(--ember); border-color: var(--ember-light); color: #fff; box-shadow: 0 0 8px rgba(200,98,42,.35); }
+  .bille-niveau.blocked { opacity: .35; cursor: not-allowed; }
+  .bille-niveau.blocked:hover { transform: none; border-color: var(--border); }
 
   /* ---- NIVEAU ---- */
   .niveau-block { display: flex; flex-direction: column; align-items: center; gap: .6rem; }
   .niveau-label { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: .18em; color: var(--gold); text-transform: uppercase; }
-  .niveau-billes { display: flex; gap: 8px; }
+  .niveau-billes { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
   .pts-dispo { font-family: 'Cinzel', serif; font-size: 11px; color: var(--ember-light); letter-spacing: .08em; min-height: 18px; text-align: center; }
   .niveau-hint { font-size: 12px; color: var(--text-dim); font-style: italic; }
 
@@ -177,7 +200,7 @@
   <div class="niveau-block">
     <div class="niveau-billes" id="billes-niveau"></div>
     <div class="pts-dispo" id="pts-dispo"></div>
-    <div class="niveau-hint">Cliquez sur la prochaine bille pour monter de niveau</div>
+    <div class="niveau-hint">Cliquez sur une bille pour définir directement le niveau</div>
   </div>
 
   <div class="section-divider"><span>✦ Caractéristiques ✦</span></div>
@@ -260,20 +283,52 @@ const canSpend = () => state.ptsDispos > 0;
 function renderNiveau() {
   const row = $('billes-niveau');
   row.innerHTML = '';
+
   for (let i = 0; i < MAX_LVL; i++) {
-    const filled  = i < state.niveau;
-    const isCurrent = i === state.niveau - 1; // dernière bille remplie = niveau actuel
-    const isNext  = i === state.niveau;
+    const level = i + 1;
+    const filled = level <= state.niveau;
+    const current = level === state.niveau;
+    const diff = level - state.niveau;
+    const canSelect = level !== state.niveau && state.ptsDispos + diff >= 0;
+
     const b = document.createElement('div');
-    b.className = `bille bille-niveau${filled ? (isCurrent ? ' current' : ' filled') : ''}${!isNext && !filled ? ' locked' : ''}`;
-    b.title = `Niveau ${i + 1}`;
-    b.textContent = isCurrent ? state.niveau : '';
-    if (isNext && state.niveau < MAX_LVL) b.onclick = () => { state.niveau++; state.ptsDispos++; save(); renderAll(); };
+    b.className = [
+      'bille',
+      'bille-niveau',
+      filled ? 'filled' : '',
+      current ? 'current' : '',
+      !canSelect && !current ? 'blocked' : ''
+    ].filter(Boolean).join(' ');
+
+    b.title = canSelect || current
+      ? `Niveau ${level}`
+      : `Impossible de redescendre au niveau ${level} : trop de points ont déjà été dépensés`;
+
+    b.textContent = level;
+
+    if (canSelect) b.onclick = () => setNiveau(level);
+
     row.appendChild(b);
   }
+
   $('pts-dispo').textContent = state.ptsDispos > 0
     ? `${state.ptsDispos} point${state.ptsDispos > 1 ? 's' : ''} à distribuer`
     : '';
+}
+
+function setNiveau(level) {
+  if (level < 1 || level > MAX_LVL || level === state.niveau) return;
+
+  const diff = level - state.niveau;
+
+  // Empêche de baisser le niveau si les points correspondants ont déjà été dépensés.
+  if (state.ptsDispos + diff < 0) return;
+
+  state.niveau = level;
+  state.ptsDispos += diff;
+
+  save();
+  renderAll();
 }
 
 // ============================================================
