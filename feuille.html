@@ -1,27 +1,15 @@
 <!DOCTYPE html>
-<html lang="fr" data-theme="dark">
+<html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Feuille de personnage</title>
+<link rel="stylesheet" href="theme.css">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+<script src="theme.js"></script>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root,
-  html[data-theme="dark"] {
-    --bg:           #0f0d0b;
-    --bg2:          #1a1612;
-    --bg3:          #231f1a;
-    --border:       #3a3026;
-    --border-light: #52463a;
-    --ember:        #c8622a;
-    --ember-light:  #e07840;
-    --gold:         #c9a84c;
-    --gold-light:   #e2c06a;
-    --text:         #e8dfd0;
-    --text-muted:   #8a7d6e;
-    --text-dim:     #5a5045;
+  /* Variables spécifiques à feuille.html */
+  :root {
     --bille-empty:  #2a2318;
     --bille-fill:   #c8622a;
     --bille-border: #52463a;
@@ -31,20 +19,7 @@
     --die-border-i: #3a3026;
     --section-bg:   #16120e;
   }
-
-  html[data-theme="light"] {
-    --bg:           #f5f0e8;
-    --bg2:          #ede6d8;
-    --bg3:          #e2d9c8;
-    --border:       #c8b89a;
-    --border-light: #a89070;
-    --ember:        #a84e1a;
-    --ember-light:  #c06020;
-    --gold:         #8a6820;
-    --gold-light:   #6a4e10;
-    --text:         #2a2018;
-    --text-muted:   #5a4a30;
-    --text-dim:     #8a7a60;
+  [data-theme="light"] {
     --bille-empty:  #ddd4c0;
     --bille-fill:   #a84e1a;
     --bille-border: #a89070;
@@ -55,46 +30,8 @@
     --section-bg:   #ede6d8;
   }
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Crimson Pro', Georgia, serif;
-    font-size: 16px;
-    min-height: 100vh;
-    padding: 2rem 1.5rem 4rem;
-    transition: background .3s, color .3s;
-  }
-
+  body { padding: 2rem 1.5rem 4rem; }
   .container { max-width: 680px; margin: 0 auto; position: relative; }
-
-  /* ---- Nav haut ---- */
-  .top-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-  }
-  .back-link {
-    font-family: 'Cinzel', serif;
-    font-size: 9px;
-    letter-spacing: .12em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    text-decoration: none;
-    border: 1px solid var(--border-light);
-    padding: 5px 12px;
-    border-radius: 2px;
-    transition: all .15s;
-  }
-  .back-link:hover { border-color: var(--ember); color: var(--ember-light); }
-  .theme-toggle {
-    font-family: 'Cinzel', serif; font-size: 9px;
-    letter-spacing: .12em; text-transform: uppercase;
-    padding: 5px 12px; border-radius: 2px; cursor: pointer;
-    border: 1px solid var(--border-light); background: transparent;
-    color: var(--text-muted); transition: all .15s;
-  }
-  .theme-toggle:hover { border-color: var(--ember); color: var(--ember-light); }
 
   /* ---- En-tête ---- */
   .header {
@@ -114,15 +51,6 @@
   .editable.name-field  { font-size: 1.8rem; font-weight: 700; letter-spacing: .06em; margin-bottom: .2rem; }
   .editable.class-field { font-size: .9rem; letter-spacing: .2em; color: var(--text-muted); }
   .editable::placeholder { color: var(--text-dim); }
-
-  /* ---- Séparateur ---- */
-  .section-divider { display: flex; align-items: center; gap: 1rem; margin: 1.4rem 0 1rem; }
-  .section-divider::before, .section-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-  .section-divider span {
-    font-family: 'Cinzel', serif; font-size: 9px;
-    letter-spacing: .18em; color: var(--gold);
-    text-transform: uppercase; white-space: nowrap;
-  }
 
   /* ---- Billes génériques ---- */
   .bille {
@@ -313,21 +241,6 @@ function load() {
     if (raw) { state = JSON.parse(raw); return true; }
   } catch {}
   return false;
-}
-
-// ============================================================
-//  THÈME
-// ============================================================
-function toggleTheme() {
-  const isDark = document.documentElement.dataset.theme === 'dark';
-  document.documentElement.dataset.theme = isDark ? 'light' : 'dark';
-  document.querySelector('.theme-toggle').textContent = isDark ? '☾ Thème sombre' : '☀ Thème clair';
-  localStorage.setItem('theme_pref_feuille', document.documentElement.dataset.theme);
-}
-function loadTheme() {
-  const t = localStorage.getItem('theme_pref_feuille') || 'dark';
-  document.documentElement.dataset.theme = t;
-  document.querySelector('.theme-toggle').textContent = t === 'light' ? '☾ Thème sombre' : '☀ Thème clair';
 }
 
 // ============================================================
@@ -590,7 +503,6 @@ function handleReset() {
 // ============================================================
 function renderAll() { renderNiveau(); renderCaracs(); renderPV(); }
 
-loadTheme();
 load();
 initFields();
 renderAll();
