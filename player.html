@@ -66,9 +66,14 @@
     <div class="level-help">Cliquez sur une bille pour définir directement le niveau</div>
   </section>
 
-  <section class="player-panel sheet-section">
-    <div class="panel-title">Progression</div>
-    <div class="progression-grid" id="progression-grid"></div>
+  <section class="player-panel compact-panel collapsible-panel" id="progression-panel">
+    <button class="collapsible-header" type="button" onclick="toggleProgressionPanel()">
+      <span>Progression</span>
+      <span class="collapsible-toggle">▾</span>
+    </button>
+    <div class="collapsible-content">
+      <div class="progression-grid" id="progression-grid"></div>
+    </div>
   </section>
 
   <section class="player-panel sheet-section">
