@@ -28,7 +28,7 @@ const PROG_LEVELS = {
   10: { type: 'crit_act' },
 };
 
-const STATS = ['PU', 'FI', 'ES'];
+const STATS = ['Puissance', 'Finesse', 'Esprit'];
 
 // ---- Helpers ----
 const $ = id => document.getElementById(id);
@@ -243,9 +243,9 @@ function renderProgression() {
       content.innerHTML = `
         <div class="prog-lvl-label">Création du personnage</div>
         <div class="prog-base">
-          6 points à répartir entre PU, FI et ES · 6 PV<br>
-          Seuil de critique (CRIT) à 6 pour PU, FI et ES<br>
-          1 action par tour pour PU, FI et ES
+          6 points à répartir entre Puissance, Finesse et Esprit · 6 PV<br>
+          Seuil de critique (CRIT) à 6 pour Puissance, Finesse et Esprit<br>
+          1 action par tour pour Puissance, Finesse et Esprit
         </div>`;
     } else if (def.type === 'stat_pv') {
       content.innerHTML = `<div class="prog-lvl-label">Niveau ${lvl} — Amélioration</div>`;
