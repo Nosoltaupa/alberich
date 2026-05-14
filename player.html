@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Personnage — Le Royaume de Givre</title>
+<link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="index.css">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+<script src="theme.js"></script>
+<script src="player-data.js"></script>
+<style>
+  body {
+    display: block;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  .player-container {
+    width: 100%;
+    max-width: 920px;
+    margin: 0 auto;
+  }
+
+  .player-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+
+  .player-header::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 1px;
+    background: var(--ember);
+  }
+
+  .player-label {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: .22em;
+    color: var(--ember);
+    text-transform: uppercase;
+    margin-bottom: .7rem;
+  }
+
+  .player-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.8rem, 6vw, 3rem);
+    color: var(--gold-l);
+    margin: 0 0 .6rem;
+  }
+
+  .player-subtitle {
+    color: var(--text-m);
+    font-size: 14px;
+    font-style: italic;
+  }
+
+  .player-panel {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .panel-title {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: .16em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: .8rem;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: .8rem;
+  }
+
+  .field-group {
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+  }
+
+  .field-group.full {
+    grid-column: 1 / -1;
+  }
+
+  .field-label {
+    font-family: 'Cinzel', serif;
+    font-size: 9px;
+    letter-spacing: .14em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  .sheet-input,
+  .sheet-select {
+    width: 100%;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    color: var(--text);
+    font-family: 'Crimson Pro', Georgia, serif;
+    font-size: 15px;
+    outline: none;
+    padding: .55rem .65rem;
+  }
+
+  .sheet-input:focus,
+  .sheet-select:focus {
+    border-color: var(--ember);
+  }
+
+  .class-preview {
+    display: grid;
+    grid-template-columns: 72px 1fr;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .class-preview-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 4px;
+    border: 1px solid var(--border-h);
+    overflow: hidden;
+    background: var(--bg3);
+  }
+
+  .class-preview-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .class-preview-name {
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem;
+    color: var(--gold-light);
+    letter-spacing: .05em;
+  }
+
+  .class-preview-desc {
+    margin-top: .25rem;
+    color: var(--text-muted);
+    font-style: italic;
+    line-height: 1.5;
+  }
+
+  .placeholder-panel {
+    color: var(--text-muted);
+    font-style: italic;
+    line-height: 1.6;
+  }
+
+  .status-line {
+    min-height: 18px;
+    margin-top: .7rem;
+    color: var(--ember-light);
+    font-size: 12px;
+    font-style: italic;
+    text-align: center;
+  }
+
+  @media (max-width: 640px) {
+    .form-grid,
+    .class-preview {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="player-container">
+
+  <div class="top-nav">
+    <a class="back-link" href="index.html">← Accueil</a>
+    <button class="theme-toggle" onclick="toggleTheme()">☀ Thème clair</button>
+  </div>
+
+  <header class="player-header">
+    <div class="player-label" id="player-label">Personnage</div>
+    <h1 class="player-title" id="player-title">Nouveau personnage</h1>
+    <div class="player-subtitle" id="player-subtitle">Feuille intégrée en construction</div>
+  </header>
+
+  <section class="player-panel">
+    <div class="panel-title">Identité</div>
+    <div class="form-grid">
+      <div class="field-group">
+        <label class="field-label" for="character-name">Nom du personnage</label>
+        <input class="sheet-input" id="character-name" type="text" placeholder="Nom du personnage" autocomplete="off">
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="class-select">Classe</label>
+        <select class="sheet-select" id="class-select"></select>
+      </div>
+    </div>
+    <div class="status-line" id="save-status"></div>
+  </section>
+
+  <section class="player-panel">
+    <div class="panel-title">Classe sélectionnée</div>
+    <div class="class-preview" id="class-preview"></div>
+  </section>
+
+  <section class="player-panel">
+    <div class="panel-title">Arbre de compétences</div>
+    <div class="placeholder-panel">
+      Prochaine étape : intégrer ici le moteur de l'arbre de compétences selon la classe sélectionnée.
+    </div>
+  </section>
+
+  <section class="player-panel">
+    <div class="panel-title">Feuille de personnage</div>
+    <div class="placeholder-panel">
+      Prochaine étape : intégrer ici la feuille de personnage et la relier aux choix de progression.
+    </div>
+  </section>
+
+</div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const PLAYER_ID = params.get('id') || 'joueur1';
+const PLAYER_META = getPlayerMeta(PLAYER_ID);
+const STORAGE_KEY = `personnage_${PLAYER_ID}`;
+
+function defaultPlayerState() {
+  return {
+    id: PLAYER_ID,
+    joueur: PLAYER_META.label,
+    nom: PLAYER_META.personnage,
+    classeId: PLAYER_META.classeId,
+  };
+}
+
+let state = defaultPlayerState();
+let statusTimer = null;
+
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  showStatus('Sauvegardé automatiquement');
+}
+
+function load() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    state = { ...defaultPlayerState(), ...JSON.parse(raw) };
+  } catch {}
+}
+
+function showStatus(message) {
+  const el = document.getElementById('save-status');
+  el.textContent = message;
+  clearTimeout(statusTimer);
+  statusTimer = setTimeout(() => { el.textContent = ''; }, 1800);
+}
+
+function renderClassSelect() {
+  const select = document.getElementById('class-select');
+  select.innerHTML = CLASSES.map(cls => `
+    <option value="${cls.id}"${cls.id === state.classeId ? ' selected' : ''}>${cls.nom}</option>
+  `).join('');
+
+  select.onchange = () => {
+    state.classeId = select.value;
+    save();
+    renderAll();
+  };
+}
+
+function renderIdentity() {
+  document.getElementById('player-label').textContent = state.joueur;
+  document.getElementById('player-title').textContent = state.nom || 'Nouveau personnage';
+
+  const classMeta = getClassMeta(state.classeId);
+  document.getElementById('player-subtitle').textContent = `${classMeta.article} ${classMeta.nom}`;
+
+  const input = document.getElementById('character-name');
+  input.value = state.nom;
+  input.oninput = () => {
+    state.nom = input.value;
+    document.getElementById('player-title').textContent = state.nom || 'Nouveau personnage';
+    save();
+  };
+}
+
+function renderClassPreview() {
+  const classMeta = getClassMeta(state.classeId);
+  document.getElementById('class-preview').innerHTML = `
+    <div class="class-preview-icon">
+      <img src="${classMeta.icone}" alt="${classMeta.nom}" onerror="this.style.display='none'">
+    </div>
+    <div>
+      <div class="class-preview-name">${classMeta.article} ${classMeta.nom}</div>
+      <div class="class-preview-desc">${classMeta.ambiance}</div>
+    </div>
+  `;
+}
+
+function renderAll() {
+  renderIdentity();
+  renderClassSelect();
+  renderClassPreview();
+}
+
+load();
+renderAll();
+</script>
+</body>
+</html>
