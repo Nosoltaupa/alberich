@@ -12,6 +12,7 @@ const PROGRESSION_LIMITS = {
   minCrit: 4,
   maxCrit: 6,
   basePV: 6,
+  creationPoints: 3,
 };
 
 const LEVEL_TYPES = {
@@ -48,22 +49,10 @@ function getAvailableProgressionLevels(currentLevel) {
 
 function defaultProgressionChoice(level) {
   const entry = getProgressionLevel(level);
-
   if (entry.type === LEVEL_TYPES.CREATION) {
-    return {
-      level,
-      type: entry.type,
-      choice: null,
-      stat: null,
-    };
+    return { level, type: entry.type, allocation: {} };
   }
-
-  return {
-    level,
-    type: entry.type,
-    choice: null,
-    stat: null,
-  };
+  return { level, type: entry.type, choice: null, stat: null };
 }
 
 function defaultProgressionState() {
@@ -73,12 +62,17 @@ function defaultProgressionState() {
 }
 
 function normalizeProgressionState(progression) {
-  const fallback = defaultProgressionState();
   const sourceChoices = progression?.choices ?? {};
-
   return {
     choices: Object.fromEntries(PROGRESSION_LEVELS.map(entry => {
       const raw = sourceChoices[entry.level] ?? {};
+      if (entry.type === LEVEL_TYPES.CREATION) {
+        return [entry.level, {
+          level: entry.level,
+          type: entry.type,
+          allocation: raw.allocation ?? {},
+        }];
+      }
       return [entry.level, {
         level: entry.level,
         type: entry.type,
@@ -87,6 +81,10 @@ function normalizeProgressionState(progression) {
       }];
     })),
   };
+}
+
+function getCreationUsedPoints(choice) {
+  return Object.values(choice?.allocation ?? {}).reduce((sum, value) => sum + Math.max(0, Number(value) || 0), 0);
 }
 
 function buildBaseComputedSheet(stats) {
@@ -102,11 +100,7 @@ function buildBaseComputedSheet(stats) {
 }
 
 function applyCritValueToFlags(critValue) {
-  return [
-    true,
-    critValue <= 5,
-    critValue <= 4,
-  ];
+  return [true, critValue <= 5, critValue <= 4];
 }
 
 function computeSheetFromProgression({ stats, level, progression }) {
@@ -117,20 +111,9 @@ function computeSheetFromProgression({ stats, level, progression }) {
   availableLevels.forEach(entry => {
     const choice = normalizedProgression.choices[entry.level];
     if (!choice) return;
-
-    if (entry.type === LEVEL_TYPES.CREATION) {
-      applyCreationChoice(computed, choice);
-      return;
-    }
-
-    if (entry.type === LEVEL_TYPES.AMELIORATION) {
-      applyAmeliorationChoice(computed, choice);
-      return;
-    }
-
-    if (entry.type === LEVEL_TYPES.MAITRISE) {
-      applyMaitriseChoice(computed, choice);
-    }
+    if (entry.type === LEVEL_TYPES.CREATION) return applyCreationChoice(computed, choice);
+    if (entry.type === LEVEL_TYPES.AMELIORATION) return applyAmeliorationChoice(computed, choice);
+    if (entry.type === LEVEL_TYPES.MAITRISE) return applyMaitriseChoice(computed, choice);
   });
 
   stats.forEach(({ key }) => {
@@ -146,73 +129,37 @@ function computeSheetFromProgression({ stats, level, progression }) {
 }
 
 function applyCreationChoice(computed, choice) {
-  if (!choice?.choice) return;
-
-  if (choice.choice === 'pv') {
-    computed.maxPV += 1;
-    return;
-  }
-
-  if (choice.choice === 'stat' && choice.stat && computed.carac[choice.stat]) {
-    computed.carac[choice.stat].val += 1;
-  }
+  Object.entries(choice?.allocation ?? {}).forEach(([stat, points]) => {
+    if (!computed.carac[stat]) return;
+    computed.carac[stat].val += Math.max(0, Number(points) || 0);
+  });
 }
 
 function applyAmeliorationChoice(computed, choice) {
   if (!choice?.choice) return;
-
-  if (choice.choice === 'pv') {
-    computed.maxPV += 1;
-    return;
-  }
-
-  if (choice.choice === 'stat' && choice.stat && computed.carac[choice.stat]) {
-    computed.carac[choice.stat].val += 1;
-  }
+  if (choice.choice === 'pv') return void (computed.maxPV += 1);
+  if (choice.choice === 'stat' && choice.stat && computed.carac[choice.stat]) computed.carac[choice.stat].val += 1;
 }
 
 function applyMaitriseChoice(computed, choice) {
   if (!choice?.choice || !choice.stat || !computed.carac[choice.stat]) return;
-
-  if (choice.choice === 'crit') {
-    computed.carac[choice.stat].critValue -= 1;
-    return;
-  }
-
-  if (choice.choice === 'action') {
-    computed.carac[choice.stat].act += 1;
-  }
+  if (choice.choice === 'crit') return void (computed.carac[choice.stat].critValue -= 1);
+  if (choice.choice === 'action') computed.carac[choice.stat].act += 1;
 }
 
 function isProgressionChoiceAllowed({ stats, level, progression, targetLevel, choice, stat }) {
   const entry = getProgressionLevel(targetLevel);
   if (targetLevel > level) return false;
+  if (entry.type === LEVEL_TYPES.CREATION) return true;
 
   const hypothetical = normalizeProgressionState(progression);
-  hypothetical.choices[targetLevel] = {
-    level: targetLevel,
-    type: entry.type,
-    choice,
-    stat: stat ?? null,
-  };
-
+  hypothetical.choices[targetLevel] = { level: targetLevel, type: entry.type, choice, stat: stat ?? null };
   const computed = computeSheetFromProgression({ stats, level, progression: hypothetical });
 
   if (choice === 'pv') return true;
-
   if (!stat || !computed.carac[stat]) return false;
-
-  if ((entry.type === LEVEL_TYPES.CREATION || entry.type === LEVEL_TYPES.AMELIORATION) && choice === 'stat') {
-    return computed.carac[stat].val <= PROGRESSION_LIMITS.maxStat;
-  }
-
-  if (entry.type === LEVEL_TYPES.MAITRISE && choice === 'crit') {
-    return computed.carac[stat].critValue >= PROGRESSION_LIMITS.minCrit;
-  }
-
-  if (entry.type === LEVEL_TYPES.MAITRISE && choice === 'action') {
-    return computed.carac[stat].act <= PROGRESSION_LIMITS.maxActions;
-  }
-
+  if (entry.type === LEVEL_TYPES.AMELIORATION && choice === 'stat') return computed.carac[stat].val <= PROGRESSION_LIMITS.maxStat;
+  if (entry.type === LEVEL_TYPES.MAITRISE && choice === 'crit') return computed.carac[stat].critValue >= PROGRESSION_LIMITS.minCrit;
+  if (entry.type === LEVEL_TYPES.MAITRISE && choice === 'action') return computed.carac[stat].act <= PROGRESSION_LIMITS.maxActions;
   return false;
 }
