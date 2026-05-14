@@ -2,6 +2,10 @@
    INDEX.CSS — Page d'accueil
    ============================================================ */
 
+:root {
+  --font-readable: 15px;
+}
+
 body {
   display: flex;
   flex-direction: column;
@@ -13,22 +17,22 @@ body {
 }
 
 .ornament {
-  font-size: 14px;
-  letter-spacing: .5em;
+  font-size: var(--font-readable);
+  letter-spacing: .42em;
   color: var(--ember);
   opacity: .6;
-  margin-bottom: 1rem;
+  margin-bottom: .85rem;
   animation: fadeIn .8s ease both;
 }
 
 .site-title {
   font-family: 'Cinzel Decorative', serif;
-  font-size: clamp(2rem, 8vw, 3.8rem);
+  font-size: clamp(1.9rem, 6vw, 3rem);
   font-weight: 700;
-  letter-spacing: .06em;
+  letter-spacing: .05em;
   line-height: 1;
   color: var(--gold-l);
-  margin-bottom: .4rem;
+  margin-bottom: .45rem;
   animation: fadeIn .8s .1s ease both;
   position: relative;
   z-index: 1;
@@ -36,11 +40,11 @@ body {
 
 .site-sub {
   font-family: 'Cinzel', serif;
-  font-size: clamp(.65rem, 2vw, .85rem);
-  letter-spacing: .28em;
+  font-size: var(--font-readable);
+  letter-spacing: .18em;
   color: var(--text-m);
   text-transform: uppercase;
-  margin-bottom: 3rem;
+  margin-bottom: 2.6rem;
   animation: fadeIn .8s .2s ease both;
 }
 
@@ -50,7 +54,7 @@ body {
   gap: 1rem;
   width: 100%;
   max-width: 560px;
-  margin-bottom: 2.5rem;
+  margin-bottom: 2.1rem;
   animation: fadeIn .8s .25s ease both;
 }
 .divider::before,
@@ -63,8 +67,8 @@ body {
 .divider::after { background: linear-gradient(to left, transparent, var(--border)); }
 .divider span {
   font-family: 'Cinzel', serif;
-  font-size: 9px;
-  letter-spacing: .2em;
+  font-size: var(--font-readable);
+  letter-spacing: .12em;
   color: var(--ember);
   text-transform: uppercase;
   white-space: nowrap;
@@ -75,14 +79,14 @@ body {
   flex-direction: column;
   gap: .8rem;
   width: 100%;
-  max-width: 480px;
-  margin-bottom: 3rem;
+  max-width: 520px;
+  margin-bottom: 2.6rem;
 }
 
 .sheet-card-wrap {
   width: 100%;
-  max-width: 480px;
-  margin-bottom: 3rem;
+  max-width: 520px;
+  margin-bottom: 2.6rem;
   animation: fadeIn .8s .65s ease both;
 }
 
@@ -92,7 +96,7 @@ body {
   background: var(--bg2);
   text-decoration: none;
   color: inherit;
-  padding: 1rem 1.2rem;
+  padding: 1rem 1.15rem;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -125,8 +129,8 @@ body {
 .class-card:hover::before { opacity: 1; }
 
 .class-card-icon {
-  width: 56px;
-  height: 56px;
+  width: 60px;
+  height: 60px;
   border-radius: 4px;
   border: 1px solid var(--border-h);
   background: var(--bg3);
@@ -134,7 +138,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 26px;
+  font-size: 27px;
   transition: border-color .2s;
   flex-shrink: 0;
 }
@@ -143,32 +147,32 @@ body {
 
 .class-card-name {
   font-family: 'Cinzel', serif;
-  font-size: .95rem;
+  font-size: 1.05rem;
   font-weight: 600;
-  letter-spacing: .08em;
+  letter-spacing: .06em;
   color: var(--gold);
   transition: color .2s;
 }
 .class-card:hover .class-card-name { color: var(--gold-l); }
 
 .class-card-ambiance {
-  font-size: 12.5px;
+  font-size: var(--font-readable);
   color: var(--text-m);
   font-style: italic;
   line-height: 1.5;
-  opacity: .8;
+  opacity: .88;
 }
 
 .class-card-progress {
   font-family: 'Cinzel', serif;
-  font-size: 9px;
-  letter-spacing: .12em;
+  font-size: var(--font-readable);
+  letter-spacing: .08em;
   color: var(--ember);
   text-transform: uppercase;
   border: 1px solid var(--ember);
   border-radius: 2px;
   padding: 2px 8px;
-  opacity: .7;
+  opacity: .75;
   transition: opacity .2s;
 }
 .class-card:hover .class-card-progress { opacity: 1; }
@@ -181,11 +185,14 @@ body {
 }
 .class-card.placeholder:hover { transform: none; border-color: var(--border); background: var(--bg2); }
 
-.theme-btn { animation: fadeIn .8s .7s ease both; }
+.theme-btn {
+  animation: fadeIn .8s .7s ease both;
+  font-size: var(--font-readable);
+}
 
 .footer-note {
-  margin-top: 2rem;
-  font-size: 11.5px;
+  margin-top: 1.8rem;
+  font-size: var(--font-readable);
   animation: fadeIn .8s .8s ease both;
 }
 
