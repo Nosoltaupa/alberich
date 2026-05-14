@@ -89,6 +89,7 @@ function renderPlayerTree({ containerId, classId, classData, treeState, playerLe
         locked ? 'locked' : '',
         open ? 'open' : '',
       ].filter(Boolean).join(' ');
+      card.title = skill.desc;
 
       card.innerHTML = `
         <div class="player-skill-header">
@@ -152,6 +153,7 @@ function renderPlayerUltimate({ classData, treeState, playerLevel, canUnlockMore
     !available ? 'locked' : '',
     open ? 'open' : '',
   ].filter(Boolean).join(' ');
+  ultimate.title = classData.ultime.desc;
 
   ultimate.innerHTML = `
     <div class="player-skill-header">
