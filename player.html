@@ -199,10 +199,14 @@
     <div class="panel-title">Identité</div>
     <div class="form-grid">
       <div class="field-group">
+        <label class="field-label" for="player-name">Prénom du joueur</label>
+        <input class="sheet-input" id="player-name" type="text" placeholder="Prénom du joueur" autocomplete="off">
+      </div>
+      <div class="field-group">
         <label class="field-label" for="character-name">Nom du personnage</label>
         <input class="sheet-input" id="character-name" type="text" placeholder="Nom du personnage" autocomplete="off">
       </div>
-      <div class="field-group">
+      <div class="field-group full">
         <label class="field-label" for="class-select">Classe</label>
         <select class="sheet-select" id="class-select"></select>
       </div>
@@ -283,16 +287,24 @@ function renderClassSelect() {
 }
 
 function renderIdentity() {
-  document.getElementById('player-label').textContent = state.joueur;
+  document.getElementById('player-label').textContent = state.joueur || PLAYER_META.label;
   document.getElementById('player-title').textContent = state.nom || 'Nouveau personnage';
 
   const classMeta = getClassMeta(state.classeId);
   document.getElementById('player-subtitle').textContent = `${classMeta.article} ${classMeta.nom}`;
 
-  const input = document.getElementById('character-name');
-  input.value = state.nom;
-  input.oninput = () => {
-    state.nom = input.value;
+  const playerInput = document.getElementById('player-name');
+  playerInput.value = state.joueur;
+  playerInput.oninput = () => {
+    state.joueur = playerInput.value;
+    document.getElementById('player-label').textContent = state.joueur || PLAYER_META.label;
+    save();
+  };
+
+  const characterInput = document.getElementById('character-name');
+  characterInput.value = state.nom;
+  characterInput.oninput = () => {
+    state.nom = characterInput.value;
     document.getElementById('player-title').textContent = state.nom || 'Nouveau personnage';
     save();
   };
