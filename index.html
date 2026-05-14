@@ -3,105 +3,72 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Le Royaume de Givre — Arbres de compétences</title>
+<title>Le Royaume de Givre — Personnages</title>
 <link rel="stylesheet" href="theme.css">
 <link rel="stylesheet" href="index.css">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
 <script src="theme.js"></script>
+<script src="player-data.js"></script>
 </head>
 <body>
-<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?si=WjcMKWGDgiAEpX2f" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 <h1 class="site-title">Le Royaume de Givre</h1>
 <div class="ornament">✦ ✦ ✦</div>
-<p class="site-sub">Arbres de compétences</p>
+<p class="site-sub">Personnages</p>
 
-<div class="divider"><span>Choisir une classe</span></div>
+<div class="divider"><span>Choisir un joueur</span></div>
 
-<div class="classes-grid" id="classes-grid">
+<div class="classes-grid" id="players-grid">
   <!-- Généré par JS -->
 </div>
 
-<div class="divider"><span>Feuille de personnage</span></div>
+<div class="divider"><span>Pages de référence</span></div>
 
 <div class="sheet-card-wrap">
   <a class="class-card no-anim" href="feuille.html">
     <div class="class-card-icon">📜</div>
     <div class="class-card-info">
-      <div class="class-card-name">Feuille de personnage</div>
-      <div class="class-card-ambiance">Caractéristiques, points de vie, progression de niveau.</div>
+      <div class="class-card-name">Feuille générique</div>
+      <div class="class-card-ambiance">Ancienne feuille autonome, conservée comme référence pendant la refonte.</div>
     </div>
   </a>
 </div>
 
 <button class="theme-btn" onclick="toggleTheme()">☾ Thème sombre</button>
 
-<p class="footer-note">Cliquez sur une classe pour ouvrir son arbre de compétences</p>
+<p class="footer-note">Cliquez sur un joueur pour ouvrir sa page de personnage intégrée</p>
 
 <script>
-// ============================================================
-//  CONFIGURATION : ajoutez / modifiez vos classes ici
-// ============================================================
-const CLASSES = [
- {
-    id:       'forgeron',
-    nom:      'Forgeron',
-    article:  'Le',
-    ambiance: 'Maître artisan capable de forger et modifier des armes et des armures.',
-    icone:    'forgeron/branche1.webp'
- },    
- {
-    id:       'guerrier',
-    nom:      'Guerrier',
-    article:  'Le',
-    ambiance: 'Rompu au combat avec toutes sortes d\'armes comme à mains nues, au commandement et à la stratégie militaire.',
-    icone:    'guerrier/branche2.webp'
- },
- {
-    id:       'mineur',
-    nom:      'Mineur',
-    article:  'Le',
-    ambiance: 'Puissant ouvrier habitué des galeries souterraines et des gobelins qui les infestent.',
-    icone:    'mineur/branche2.webp'
- },
- {
-    id:       'trappeur',              // nom du dossier
-    nom:      'Trappeur',
-    article:  'Le',
-    ambiance: 'Maître de la survie dans les montagnes et de la chasse au moyen de pièges ingénieux.',
-    icone:    'trappeur/branche1.webp' // image à afficher sur la carte (optionnel)
- },
-];
-
-// ============================================================
-
-function getProgress(classeId) {
+function getSavedPlayer(playerId) {
   try {
-    const raw = localStorage.getItem(`arbre_${classeId}`);
-    if (!raw) return null;
-    const data = JSON.parse(raw);
-    return data.playerLevel ?? null;
-  } catch { return null; }
+    const raw = localStorage.getItem(`personnage_${playerId}`);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
 }
 
 function buildGrid() {
-  const grid = document.getElementById('classes-grid');
+  const grid = document.getElementById('players-grid');
   grid.innerHTML = '';
 
-  CLASSES.forEach(cls => {
-    const lvl = getProgress(cls.id);
+  PLAYERS.forEach(player => {
+    const saved = getSavedPlayer(player.id);
+    const characterName = saved?.nom || player.personnage;
+    const classId = saved?.classeId || player.classeId;
+    const classMeta = getClassMeta(classId);
+
     const card = document.createElement('a');
     card.className = 'class-card';
-    card.href = `arbre.html?classe=${cls.id}`;
+    card.href = `player.html?id=${player.id}`;
 
     card.innerHTML = `
       <div class="class-card-icon">
-        <img src="${cls.icone}" alt="${cls.nom}"
-             onerror="this.style.display='none';this.parentElement.textContent='⚔'">
+        <img src="${classMeta.icone}" alt="${classMeta.nom}"
+             onerror="this.style.display='none';this.parentElement.textContent='✦'">
       </div>
       <div class="class-card-info">
-        <div class="class-card-name">${cls.article} ${cls.nom}</div>
-        <div class="class-card-ambiance">${cls.ambiance}</div>
-        ${lvl ? `<div class="class-card-progress">Niveau ${lvl}</div>` : ''}
+        <div class="class-card-name">${player.label}</div>
+        <div class="class-card-ambiance">${characterName} · ${classMeta.article} ${classMeta.nom}</div>
       </div>
     `;
 
