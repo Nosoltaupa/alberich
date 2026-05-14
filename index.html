@@ -53,6 +53,7 @@ function buildGrid() {
 
   PLAYERS.forEach(player => {
     const saved = getSavedPlayer(player.id);
+    const playerName = saved?.joueur || player.label;
     const characterName = saved?.nom || player.personnage;
     const classId = saved?.classeId || player.classeId;
     const classMeta = getClassMeta(classId);
@@ -67,7 +68,7 @@ function buildGrid() {
              onerror="this.style.display='none';this.parentElement.textContent='✦'">
       </div>
       <div class="class-card-info">
-        <div class="class-card-name">${player.label}</div>
+        <div class="class-card-name">${playerName}</div>
         <div class="class-card-ambiance">${characterName} · ${classMeta.article} ${classMeta.nom}</div>
       </div>
     `;
