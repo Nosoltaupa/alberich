@@ -53,6 +53,9 @@ body { display:block; padding:2rem 1.5rem 4rem; }
 .progression-btn.active { border-color:var(--ember); color:var(--ember-light); background:var(--prog-done); }
 .progression-btn:disabled { opacity:.35; cursor:not-allowed; }
 .progression-stat-row { display:flex; flex-wrap:wrap; gap:.45rem; margin-top:.5rem; }
+.creation-stat-control { display:flex; align-items:center; gap:.45rem; border:1px solid var(--border); background:var(--bg3); border-radius:3px; padding:.35rem .5rem; font-family:'Cinzel',serif; color:var(--text); }
+.creation-stat-control span { color:var(--gold-light); }
+.creation-stat-control strong { min-width:1.2rem; text-align:center; color:var(--ember-light); }
 .carac-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; }
 .carac-col { background:var(--section-bg); border:1px solid var(--border); border-radius:4px; padding:.9rem .6rem 1rem; display:flex; flex-direction:column; align-items:center; gap:.9rem; }
 .carac-head { text-align:center; min-height:3.1rem; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:.2rem; }
@@ -112,4 +115,8 @@ body { display:block; padding:2rem 1.5rem 4rem; }
 .tree-btn:disabled { opacity:.4; cursor:not-allowed; }
 .player-ultimate { margin-top:1rem; }
 .tree-error { color:#d08080; font-style:italic; font-size:var(--font-readable); }
+.player-actions { display:flex; justify-content:center; flex-wrap:wrap; gap:.65rem; margin:2rem auto 0; }
+.sheet-action-btn { font-family:'Cinzel',serif; font-size:var(--font-readable); letter-spacing:.12em; text-transform:uppercase; padding:6px 14px; border-radius:2px; cursor:pointer; border:1px solid var(--border); background:transparent; color:var(--text-dim); transition:all .15s; }
+.sheet-action-btn:hover { border-color:var(--ember); color:var(--ember-light); }
+.sheet-action-btn.danger:hover { border-color:#a04040; color:#c06060; }
 @media (max-width:640px) { .form-grid,.style-grid,.class-preview,.carac-grid,.inventaire-grid,.player-tree-grid,.progression-grid { grid-template-columns:1fr; } .field-group.full { grid-column:1 / -1; } .equipement-row { grid-template-columns:1fr; } .player-tree-head { flex-direction:column; } }
