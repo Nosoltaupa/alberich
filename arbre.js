@@ -243,7 +243,7 @@ function renderProgression() {
       content.innerHTML = `
         <div class="prog-lvl-label">Création du personnage</div>
         <div class="prog-base">
-          6 points à répartir entre Puissance, Finesse et Esprit · 6 PV<br>
+          6 points à répartir entre Puissance, Finesse et Esprit · 6 ♥<br>
           Seuil de critique (CRIT) à 6 pour Puissance, Finesse et Esprit<br>
           1 action par tour pour Puissance, Finesse et Esprit
         </div>`;
