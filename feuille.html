@@ -227,7 +227,11 @@ const MAX_ACT  = 3;
 const MAX_LVL  = 10;
 const BASE_PV  = 6;
 const START_PTS = 3;   // points offerts à la création (niveau 0)
-const CARACS   = ['Puissance', 'Finesse', 'Esprit'];
+const CARACS = [
+  { key: 'PU', label: 'Puissance' },
+  { key: 'FI', label: 'Finesse' },
+  { key: 'ES', label: 'Esprit' },
+];
 const CRIT_FACES = [6, 5, 4]; // fi=0 toujours actif
 
 // ---- SVG faces de dé ----
@@ -250,13 +254,38 @@ function defaultState() {
     nom: '', classe: '',
     niveau: 1,
     ptsDispos: START_PTS,
-    carac: Object.fromEntries(CARACS.map(c => [c, { val: 1, act: 1, crit: [true, false, false] }])),
+    carac: Object.fromEntries(CARACS.map(c => [c.key, { val: 1, act: 1, crit: [true, false, false] }])),
     pv: Array.from({ length: BASE_PV }, () => ({ lost: false })),
   };
 }
 
 let state = defaultState();
 const $ = id => document.getElementById(id);
+
+function normalizeState(data) {
+  const fallback = defaultState();
+  const normalized = { ...fallback, ...data };
+  normalized.carac = normalized.carac ?? {};
+
+  const legacyKeys = {
+    PU: ['PU', 'Puissance'],
+    FI: ['FI', 'Finesse'],
+    ES: ['ES', 'Esprit'],
+  };
+
+  const nextCarac = {};
+  CARACS.forEach(({ key }) => {
+    const foundKey = legacyKeys[key].find(k => normalized.carac[k]);
+    nextCarac[key] = foundKey ? normalized.carac[foundKey] : fallback.carac[key];
+  });
+
+  normalized.carac = nextCarac;
+  normalized.pv = Array.isArray(normalized.pv) ? normalized.pv : fallback.pv;
+  normalized.niveau = Number.isInteger(normalized.niveau) ? normalized.niveau : fallback.niveau;
+  normalized.ptsDispos = Number.isInteger(normalized.ptsDispos) ? normalized.ptsDispos : fallback.ptsDispos;
+
+  return normalized;
+}
 
 // ============================================================
 //  PERSISTANCE
@@ -265,7 +294,11 @@ function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 function load() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) { state = JSON.parse(raw); return true; }
+    if (raw) {
+      state = normalizeState(JSON.parse(raw));
+      save();
+      return true;
+    }
   } catch {}
   return false;
 }
@@ -336,32 +369,32 @@ function renderCaracs() {
   const grid = $('carac-grid');
   grid.innerHTML = '';
 
-  CARACS.forEach(c => {
+  CARACS.forEach(({ key, label }) => {
     const col = document.createElement('div');
     col.className = 'carac-col';
-    col.innerHTML = `<div class="carac-name">${c}</div>`;
+    col.innerHTML = `<div class="carac-name">${label}</div>`;
 
     // --- Valeur (5 billes, min 1 toujours remplie) ---
     const valBlock = document.createElement('div');
     valBlock.className = 'billes-row';
     for (let i = 0; i < MAX_VAL; i++) {
-      const filled = i < state.carac[c].val;
+      const filled = i < state.carac[key].val;
       const isMin  = i === 0;
-      const cost   = i + 1 - state.carac[c].val; // points nécessaires pour atteindre cette bille
+      const cost   = i + 1 - state.carac[key].val; // points nécessaires pour atteindre cette bille
       const canReach = !filled && cost > 0 && state.ptsDispos >= cost;
       const b = document.createElement('div');
 
       if (isMin && filled) {
         b.className = 'bille filled fixed';
-        b.title = `${c} minimum (1)`;
+        b.title = `${label} minimum (1)`;
       } else if (filled) {
         b.className = 'bille filled';
-        b.title = `Retirer jusqu'ici (${c} → ${i}, +${state.carac[c].val - i} pt${state.carac[c].val - i > 1 ? 's' : ''})`;
-        b.onclick = () => clickValRemoveTo(c, i);
+        b.title = `Retirer jusqu'ici (${label} → ${i}, +${state.carac[key].val - i} pt${state.carac[key].val - i > 1 ? 's' : ''})`;
+        b.onclick = () => clickValRemoveTo(key, i);
       } else if (canReach) {
         b.className = 'bille';
-        b.title = cost === 1 ? `+1 ${c}` : `Remplir jusqu'ici (${cost} pts)`;
-        b.onclick = () => clickValAddTo(c, i + 1);
+        b.title = cost === 1 ? `+1 ${label}` : `Remplir jusqu'ici (${cost} pts)`;
+        b.onclick = () => clickValAddTo(key, i + 1);
       } else {
         b.className = 'bille locked';
         b.title = !canSpend() ? 'Montez de niveau pour débloquer' : `Pas assez de points (${cost} nécessaire${cost > 1 ? 's' : ''})`;
@@ -377,29 +410,29 @@ function renderCaracs() {
     const diceRow = document.createElement('div');
     diceRow.className = 'crit-dice';
     CRIT_FACES.forEach((face, fi) => {
-      const active = state.carac[c].crit[fi];
+      const active = state.carac[key].crit[fi];
       const isFixed = fi === 0;
       const wrap = document.createElement('div');
       wrap.className = 'die-wrap';
       const die = document.createElement('div');
       die.innerHTML = dieSVG(face);
 
-      const prereqOk = fi === 0 || fi === 1 || state.carac[c].crit[fi - 1]; // dé 4 requiert dé 5
+      const prereqOk = fi === 0 || fi === 1 || state.carac[key].crit[fi - 1]; // dé 4 requiert dé 5
 
       if (isFixed) {
         die.className = `die-face active fixed`;
-        die.title = `CRIT ${c} : ${face} (de base)`;
+        die.title = `CRIT ${label} : ${face} (de base)`;
       } else if (active) {
         die.className = 'die-face active';
-        die.title = `Désactiver CRIT ${face} pour ${c}`;
-        die.onclick = () => clickCritRemove(c, fi);
+        die.title = `Désactiver CRIT ${face} pour ${label}`;
+        die.onclick = () => clickCritRemove(key, fi);
       } else if (!prereqOk) {
         die.className = 'die-face locked';
-        die.title = `Activez d'abord le CRIT 5 pour ${c}`;
+        die.title = `Activez d'abord le CRIT 5 pour ${label}`;
       } else if (canSpend()) {
         die.className = 'die-face';
-        die.title = `Activer CRIT ${face} pour ${c} (1 point)`;
-        die.onclick = () => clickCritAdd(c, fi);
+        die.title = `Activer CRIT ${face} pour ${label} (1 point)`;
+        die.onclick = () => clickCritAdd(key, fi);
       } else {
         die.className = 'die-face locked';
         die.title = 'Montez de niveau pour débloquer';
@@ -418,23 +451,23 @@ function renderCaracs() {
     const actRow = document.createElement('div');
     actRow.className = 'billes-row';
     for (let i = 0; i < MAX_ACT; i++) {
-      const filled   = i < state.carac[c].act;
+      const filled   = i < state.carac[key].act;
       const isMin    = i === 0;
-      const cost     = i + 1 - state.carac[c].act;
+      const cost     = i + 1 - state.carac[key].act;
       const canReach = !filled && cost > 0 && state.ptsDispos >= cost;
       const b = document.createElement('div');
 
       if (isMin) {
         b.className = 'bille filled fixed';
-        b.title = `${c} : 1 action/tour (de base)`;
+        b.title = `${label} : 1 action/tour (de base)`;
       } else if (filled) {
         b.className = 'bille filled';
-        b.title = `Retirer jusqu'ici (${c} → ${i} action${i > 1 ? 's' : ''}/tour, +${state.carac[c].act - i} pt${state.carac[c].act - i > 1 ? 's' : ''})`;
-        b.onclick = () => clickActRemoveTo(c, i);
+        b.title = `Retirer jusqu'ici (${label} → ${i} action${i > 1 ? 's' : ''}/tour, +${state.carac[key].act - i} pt${state.carac[key].act - i > 1 ? 's' : ''})`;
+        b.onclick = () => clickActRemoveTo(key, i);
       } else if (canReach) {
         b.className = 'bille';
-        b.title = cost === 1 ? `+1 action ${c}/tour` : `Remplir jusqu'ici (${cost} pts)`;
-        b.onclick = () => clickActAddTo(c, i + 1);
+        b.title = cost === 1 ? `+1 action ${label}/tour` : `Remplir jusqu'ici (${cost} pts)`;
+        b.onclick = () => clickActAddTo(key, i + 1);
       } else {
         b.className = 'bille locked';
         b.title = !canSpend() ? 'Montez de niveau pour débloquer' : `Pas assez de points (${cost} nécessaire${cost > 1 ? 's' : ''})`;
@@ -451,43 +484,43 @@ function renderCaracs() {
 // ============================================================
 //  ACTIONS — CARACTÉRISTIQUES
 // ============================================================
-function clickValAddTo(c, targetVal) {
-  const cost = targetVal - state.carac[c].val;
+function clickValAddTo(key, targetVal) {
+  const cost = targetVal - state.carac[key].val;
   if (cost <= 0 || targetVal > MAX_VAL || state.ptsDispos < cost) return;
-  state.carac[c].val = targetVal;
+  state.carac[key].val = targetVal;
   state.ptsDispos -= cost;
   save(); renderAll();
 }
 // Révoque jusqu'à la bille i (incluse), rembourse tous les points au-dessus
-function clickValRemoveTo(c, i) {
-  const removed = state.carac[c].val - i; // nombre de billes à enlever (val passe à i)
+function clickValRemoveTo(key, i) {
+  const removed = state.carac[key].val - i; // nombre de billes à enlever (val passe à i)
   if (i < 1) return;
-  state.carac[c].val = i;
+  state.carac[key].val = i;
   state.ptsDispos += removed;
   save(); renderAll();
 }
-function clickActAddTo(c, targetAct) {
-  const cost = targetAct - state.carac[c].act;
+function clickActAddTo(key, targetAct) {
+  const cost = targetAct - state.carac[key].act;
   if (cost <= 0 || targetAct > MAX_ACT || state.ptsDispos < cost) return;
-  state.carac[c].act = targetAct;
+  state.carac[key].act = targetAct;
   state.ptsDispos -= cost;
   save(); renderAll();
 }
 // Révoque jusqu'à la bille i (incluse), rembourse tous les points au-dessus
-function clickActRemoveTo(c, i) {
-  const removed = state.carac[c].act - i;
+function clickActRemoveTo(key, i) {
+  const removed = state.carac[key].act - i;
   if (i < 1) return;
-  state.carac[c].act = i;
+  state.carac[key].act = i;
   state.ptsDispos += removed;
   save(); renderAll();
 }
-function clickCritAdd(c, fi) { if (!canSpend()) return; state.carac[c].crit[fi] = true; state.ptsDispos--; save(); renderAll(); }
-function clickCritRemove(c, fi) {
+function clickCritAdd(key, fi) { if (!canSpend()) return; state.carac[key].crit[fi] = true; state.ptsDispos--; save(); renderAll(); }
+function clickCritRemove(key, fi) {
   if (fi === 0) return;
-  state.carac[c].crit[fi] = false;
+  state.carac[key].crit[fi] = false;
   // Si on révoque le dé 5 (fi=1), révoquer aussi le dé 4 (fi=2) s'il était actif
-  if (fi === 1 && state.carac[c].crit[2]) {
-    state.carac[c].crit[2] = false;
+  if (fi === 1 && state.carac[key].crit[2]) {
+    state.carac[key].crit[2] = false;
     state.ptsDispos++;
   }
   state.ptsDispos++;
