@@ -164,6 +164,72 @@
   .add-pv:hover { border-color: var(--ember); color: var(--ember-light); transform: scale(1.1); }
   .add-pv.locked { opacity: .28; cursor: not-allowed; pointer-events: none; }
 
+  /* ---- ÉQUIPEMENT / INVENTAIRE ---- */
+  .equipement-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: .9rem;
+  }
+
+  .equipement-card,
+  .inventaire-slot {
+    background: var(--section-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: .8rem;
+  }
+
+  .equipement-title {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: .16em;
+    color: var(--gold-light);
+    text-transform: uppercase;
+    margin-bottom: .6rem;
+  }
+
+  .equipement-row {
+    display: grid;
+    grid-template-columns: 1fr 90px;
+    gap: .6rem;
+    margin-bottom: .6rem;
+  }
+
+  .sheet-input,
+  .sheet-textarea {
+    width: 100%;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    color: var(--text);
+    font-family: 'Crimson Pro', Georgia, serif;
+    font-size: 14px;
+    outline: none;
+    padding: .45rem .55rem;
+  }
+
+  .sheet-input:focus,
+  .sheet-textarea:focus {
+    border-color: var(--ember);
+  }
+
+  .sheet-input::placeholder,
+  .sheet-textarea::placeholder {
+    color: var(--text-dim);
+  }
+
+  .sheet-textarea {
+    resize: vertical;
+    min-height: 54px;
+    line-height: 1.45;
+  }
+
+  .inventaire-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: .6rem;
+  }
+
   /* ---- Bouton reset ---- */
   .btn-reset {
     font-family: 'Cinzel', serif; font-size: 9px;
@@ -177,7 +243,11 @@
 
   .footer-note { margin-top: 2rem; text-align: center; font-size: 12px; color: var(--text-dim); font-style: italic; line-height: 1.7; }
 
-  @media (max-width: 480px) { .carac-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 480px) {
+    .carac-grid { grid-template-columns: 1fr; }
+    .inventaire-grid { grid-template-columns: 1fr; }
+    .equipement-row { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
@@ -208,6 +278,12 @@
   <div class="pv-block">
     <div class="hearts-row" id="hearts-row"></div>
   </div>
+
+  <div class="section-divider"><span>✦ Équipement ✦</span></div>
+  <div class="equipement-grid" id="equipement-grid"></div>
+
+  <div class="section-divider"><span>✦ Inventaire ✦</span></div>
+  <div class="inventaire-grid" id="inventaire-grid"></div>
 
   <button class="btn-reset" id="btn-reset" onclick="handleReset()">↺ Réinitialiser la feuille</button>
 
@@ -256,6 +332,12 @@ function defaultState() {
     ptsDispos: START_PTS,
     carac: Object.fromEntries(CARACS.map(c => [c.key, { val: 1, act: 1, crit: [true, false, false] }])),
     pv: Array.from({ length: BASE_PV }, () => ({ lost: false })),
+    equipement: {
+      main1: { nom: '', valeur: '', desc: '' },
+      main2: { nom: '', valeur: '', desc: '' },
+      armure: { nom: '', valeur: '', desc: '' },
+    },
+    inventaire: Array.from({ length: 6 }, () => ''),
   };
 }
 
@@ -284,6 +366,28 @@ function normalizeState(data) {
   normalized.niveau = Number.isInteger(normalized.niveau) ? normalized.niveau : fallback.niveau;
   normalized.ptsDispos = Number.isInteger(normalized.ptsDispos) ? normalized.ptsDispos : fallback.ptsDispos;
 
+  normalized.equipement = {
+    main1: {
+      nom: normalized.equipement?.main1?.nom ?? '',
+      valeur: normalized.equipement?.main1?.valeur ?? '',
+      desc: normalized.equipement?.main1?.desc ?? '',
+    },
+    main2: {
+      nom: normalized.equipement?.main2?.nom ?? '',
+      valeur: normalized.equipement?.main2?.valeur ?? '',
+      desc: normalized.equipement?.main2?.desc ?? '',
+    },
+    armure: {
+      nom: normalized.equipement?.armure?.nom ?? '',
+      valeur: normalized.equipement?.armure?.valeur ?? '',
+      desc: normalized.equipement?.armure?.desc ?? '',
+    },
+  };
+
+  normalized.inventaire = Array.from({ length: 6 }, (_, i) =>
+    normalized.inventaire?.[i] ?? ''
+  );
+
   return normalized;
 }
 
@@ -307,6 +411,21 @@ function load() {
 //  HELPERS
 // ============================================================
 const canSpend = () => state.ptsDispos > 0;
+
+function escapeAttr(value) {
+  return String(value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('"', '&quot;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;');
+}
+
+function escapeText(value) {
+  return String(value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;');
+}
 
 // ============================================================
 //  RENDU — NIVEAU
@@ -551,6 +670,76 @@ function renderPV() {
 }
 
 // ============================================================
+//  RENDU — ÉQUIPEMENT / INVENTAIRE
+// ============================================================
+function renderEquipement() {
+  const grid = $('equipement-grid');
+  grid.innerHTML = '';
+
+  const items = [
+    { key: 'main1', title: 'Main principale', valueLabel: 'DEG' },
+    { key: 'main2', title: 'Main secondaire', valueLabel: 'DEG' },
+    { key: 'armure', title: 'Armure', valueLabel: 'ARM' },
+  ];
+
+  items.forEach(item => {
+    const data = state.equipement[item.key];
+
+    const card = document.createElement('div');
+    card.className = 'equipement-card';
+
+    card.innerHTML = `
+      <div class="equipement-title">${item.title}</div>
+      <div class="equipement-row">
+        <input class="sheet-input" type="text" placeholder="Nom de l'objet" value="${escapeAttr(data.nom)}">
+        <input class="sheet-input" type="text" placeholder="${item.valueLabel}" value="${escapeAttr(data.valeur)}">
+      </div>
+      <textarea class="sheet-textarea" placeholder="Description">${escapeText(data.desc)}</textarea>
+    `;
+
+    const [nomInput, valeurInput] = card.querySelectorAll('input');
+    const descInput = card.querySelector('textarea');
+
+    nomInput.oninput = () => {
+      state.equipement[item.key].nom = nomInput.value;
+      save();
+    };
+
+    valeurInput.oninput = () => {
+      state.equipement[item.key].valeur = valeurInput.value;
+      save();
+    };
+
+    descInput.oninput = () => {
+      state.equipement[item.key].desc = descInput.value;
+      save();
+    };
+
+    grid.appendChild(card);
+  });
+}
+
+function renderInventaire() {
+  const grid = $('inventaire-grid');
+  grid.innerHTML = '';
+
+  state.inventaire.forEach((value, i) => {
+    const input = document.createElement('input');
+    input.className = 'sheet-input inventaire-slot';
+    input.type = 'text';
+    input.placeholder = `Objet ${i + 1}`;
+    input.value = value;
+
+    input.oninput = () => {
+      state.inventaire[i] = input.value;
+      save();
+    };
+
+    grid.appendChild(input);
+  });
+}
+
+// ============================================================
 //  CHAMPS TEXTE
 // ============================================================
 function initFields() {
@@ -591,7 +780,13 @@ function handleReset() {
 // ============================================================
 //  RENDU GLOBAL + POINT D'ENTRÉE
 // ============================================================
-function renderAll() { renderNiveau(); renderCaracs(); renderPV(); }
+function renderAll() {
+  renderNiveau();
+  renderCaracs();
+  renderPV();
+  renderEquipement();
+  renderInventaire();
+}
 
 load();
 initFields();
