@@ -21,16 +21,15 @@
   .player-title { font-family:'Cinzel Decorative',serif; font-size:clamp(1.55rem,4.5vw,2.45rem); color:var(--gold-l); margin:0 0 .5rem; }
   .player-subtitle { color:var(--text-m); font-size:var(--font-readable); font-style:italic; }
   .player-panel { background:var(--bg2); border:1px solid var(--border); border-radius:4px; padding:1rem; margin-bottom:1.2rem; }
-  .player-panel.compact-panel { padding:.75rem .9rem .45rem; }
+  .player-panel.compact-panel { padding:0; }
   .sheet-section { background:transparent; border:none; border-radius:0; padding:.35rem 0 1.1rem; margin-bottom:1.1rem; }
   .panel-title { font-family:'Cinzel',serif; font-size:var(--font-readable); letter-spacing:.12em; color:var(--gold); text-transform:uppercase; margin-bottom:.8rem; }
   .sheet-section .panel-title { text-align:center; color:var(--ember); margin-bottom:.9rem; }
   .collapsible-panel { padding:0; overflow:hidden; }
-  .collapsible-header { width:100%; border:none; background:transparent; color:var(--gold); cursor:pointer; padding:.8rem 1rem; display:flex; align-items:center; justify-content:space-between; gap:1rem; font-family:'Cinzel',serif; font-size:var(--font-readable); letter-spacing:.12em; text-transform:uppercase; text-align:left; }
-  .collapsible-header:hover { color:var(--gold-l); }
+  .collapsible-header { width:100%; min-height:34px; border:none; background:transparent; color:var(--gold); cursor:pointer; padding:.35rem .75rem; display:flex; align-items:center; justify-content:space-between; gap:1rem; font-family:'Cinzel',serif; font-size:var(--font-readable); letter-spacing:.1em; text-transform:uppercase; text-align:left; line-height:1.15; }  .collapsible-header:hover { color:var(--gold-l); }
   .collapsible-toggle { color:var(--ember); transition:transform .2s; }
   .collapsible-panel.is-closed .collapsible-toggle { transform:rotate(-90deg); }
-  .collapsible-content { padding:0 1rem 1rem; }
+  .collapsible-content { padding:.65rem 1rem 1rem; }
   .collapsible-panel.is-closed .collapsible-content { display:none; }
   .form-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:.65rem; align-items:end; }
   .field-group { display:flex; flex-direction:column; gap:.2rem; }
@@ -39,6 +38,7 @@
   .sheet-input,.sheet-select,.sheet-textarea { width:100%; background:var(--bg3); border:1px solid var(--border); border-radius:3px; color:var(--text); font-family:'Crimson Pro',Georgia,serif; font-size:var(--font-readable); outline:none; padding:.45rem .55rem; }
   .sheet-input:focus,.sheet-select:focus,.sheet-textarea:focus { border-color:var(--ember); }
   .sheet-textarea { resize:vertical; min-height:58px; line-height:1.45; }
+  .inventory-textarea { min-height:4.7em; resize:vertical; }
   .class-preview { display:grid; grid-template-columns:72px 1fr; gap:1rem; align-items:center; margin-top:1rem; padding-top:1rem; border-top:1px solid var(--border); }
   .class-preview-icon { width:72px; height:72px; border-radius:4px; border:1px solid var(--border-h); overflow:hidden; background:var(--bg3); }
   .class-preview-icon img { width:100%; height:100%; object-fit:cover; display:block; }
@@ -182,8 +182,25 @@ function renderSheetLevel() { const row = document.getElementById('sheet-level-b
 function renderSheetCaracs() { const grid = document.getElementById('sheet-carac-grid'); grid.innerHTML = ''; STATS.forEach(({ key, label }) => { const data = state.sheet.carac[key]; const style = state.styles?.[key] ?? ''; const col = document.createElement('div'); col.className = 'carac-col'; col.innerHTML = `<div class="carac-head"><div class="carac-name">${label}</div><div class="carac-style">${escapeText(style)}</div></div>`; const valRow = document.createElement('div'); valRow.className = 'billes-row'; for (let i = 0; i < MAX_VAL; i++) { const value = i + 1; const b = document.createElement('div'); b.className = `bille${value <= data.val ? ' filled' : ''}${value === 1 ? ' fixed' : ''}`; b.title = `${label} ${value}`; b.onclick = () => { state.sheet.carac[key].val = value; save(); renderSheetCaracs(); }; valRow.appendChild(b); } col.appendChild(valRow); const critBlock = document.createElement('div'); critBlock.className = 'crit-block'; critBlock.innerHTML = '<div class="block-label">Critique</div>'; const diceRow = document.createElement('div'); diceRow.className = 'crit-dice'; CRIT_FACES.forEach((face, fi) => { const die = document.createElement('div'); die.innerHTML = dieSVG(face); die.className = `die-face${data.crit[fi] ? ' active' : ''}${fi === 0 ? ' fixed' : ''}`; die.title = `CRIT ${label} : ${face}`; if (fi > 0) die.onclick = () => { state.sheet.carac[key].crit[fi] = !state.sheet.carac[key].crit[fi]; if (!state.sheet.carac[key].crit[1]) state.sheet.carac[key].crit[2] = false; save(); renderSheetCaracs(); }; diceRow.appendChild(die); }); critBlock.appendChild(diceRow); col.appendChild(critBlock); const actBlock = document.createElement('div'); actBlock.className = 'actions-block'; actBlock.innerHTML = '<div class="block-label">Actions / tour</div>'; const actRow = document.createElement('div'); actRow.className = 'billes-row'; for (let i = 0; i < MAX_ACT; i++) { const value = i + 1; const b = document.createElement('div'); b.className = `bille${value <= data.act ? ' filled' : ''}${value === 1 ? ' fixed' : ''}`; b.title = `${label} : ${value} action${value > 1 ? 's' : ''}/tour`; b.onclick = () => { state.sheet.carac[key].act = value; save(); renderSheetCaracs(); }; actRow.appendChild(b); } actBlock.appendChild(actRow); col.appendChild(actBlock); grid.appendChild(col); }); }
 function renderSheetPV() { const row = document.getElementById('sheet-hearts-row'); row.innerHTML = ''; state.sheet.pv.forEach((h, i) => { const el = document.createElement('span'); el.className = `heart ${h.lost ? 'lost' : 'full'}`; el.textContent = '♥'; el.title = h.lost ? 'Blessure — cliquer pour récupérer' : 'PV — cliquer pour perdre'; el.onclick = () => { state.sheet.pv[i].lost = !state.sheet.pv[i].lost; save(); renderSheetPV(); }; row.appendChild(el); }); }
 function renderSheetEquipement() { const grid = document.getElementById('sheet-equipement-grid'); grid.innerHTML = ''; [{ key: 'main1', title: 'Main principale', valueLabel: 'DEG' }, { key: 'main2', title: 'Main secondaire', valueLabel: 'DEG' }, { key: 'armure', title: 'Armure', valueLabel: 'ARM' }].forEach(item => { const data = state.sheet.equipement[item.key]; const card = document.createElement('div'); card.className = 'equipement-card'; card.innerHTML = `<div class="equipement-title">${item.title}</div><div class="equipement-row"><input class="sheet-input" type="text" placeholder="Nom de l'objet" value="${escapeAttr(data.nom)}"><input class="sheet-input" type="text" placeholder="${item.valueLabel}" value="${escapeAttr(data.valeur)}"></div><textarea class="sheet-textarea" placeholder="Description">${escapeText(data.desc)}</textarea>`; const [nomInput, valeurInput] = card.querySelectorAll('input'); const descInput = card.querySelector('textarea'); nomInput.oninput = () => { state.sheet.equipement[item.key].nom = nomInput.value; save(); }; valeurInput.oninput = () => { state.sheet.equipement[item.key].valeur = valeurInput.value; save(); }; descInput.oninput = () => { state.sheet.equipement[item.key].desc = descInput.value; save(); }; grid.appendChild(card); }); }
-function renderSheetInventaire() { const grid = document.getElementById('sheet-inventaire-grid'); grid.innerHTML = ''; state.sheet.inventaire.forEach((value, i) => { const input = document.createElement('input'); input.className = 'sheet-input inventaire-slot'; input.type = 'text'; input.placeholder = `Objet ${i + 1}`; input.value = value; input.oninput = () => { state.sheet.inventaire[i] = input.value; save(); }; grid.appendChild(input); }); }
-function renderSheet() { renderSheetLevel(); renderSheetCaracs(); renderSheetPV(); renderSheetEquipement(); renderSheetInventaire(); }
+function renderSheetInventaire() {
+  const grid = document.getElementById('sheet-inventaire-grid');
+  grid.innerHTML = '';
+
+  state.sheet.inventaire.forEach((value, i) => {
+    const input = document.createElement('textarea');
+    input.className = 'sheet-textarea inventory-textarea inventaire-slot';
+    input.placeholder = `Objet ${i + 1}`;
+    input.rows = 2;
+    input.value = value;
+
+    input.oninput = () => {
+      state.sheet.inventaire[i] = input.value;
+      save();
+    };
+
+    grid.appendChild(input);
+  });
+}function renderSheet() { renderSheetLevel(); renderSheetCaracs(); renderSheetPV(); renderSheetEquipement(); renderSheetInventaire(); }
 function renderTreeOnly() { if (!currentClassData) return; ensurePlayerTreeState(state); renderPlayerTree({ containerId:'player-tree-root', classId:state.classeId, classData:currentClassData, treeState:state.tree, playerLevel:state.sheet.niveau, onChange: treeState => { state.tree = treeState; save(); renderTreeOnly(); } }); }
 async function loadAndRenderTree() { const root = document.getElementById('player-tree-root'); root.innerHTML = '<div class="placeholder-panel">Chargement de l’arbre…</div>'; try { ensurePlayerTreeState(state); currentClassData = await loadClassScript(state.classeId); renderTreeOnly(); } catch (err) { root.innerHTML = `<div class="tree-error">${err.message}</div>`; } }
 function renderAll() { renderIdentity(); renderClassSelect(); renderStylesConfig(); renderClassPreview(); renderSheet(); restoreIdentityPanel(); }
