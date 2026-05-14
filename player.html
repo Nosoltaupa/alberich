@@ -10,102 +10,82 @@
 <script src="theme.js"></script>
 <script src="player-data.js"></script>
 <style>
-  :root {
-    --bille-empty:  #2a2318;
-    --bille-fill:   #c8622a;
-    --bille-border: #52463a;
-    --die-active:   #c9a84c;
-    --die-inactive: #2a2318;
-    --die-border-a: #c9a84c;
-    --die-border-i: #3a3026;
-    --section-bg:   #16120e;
-    --prog-done:    #2a2010;
-    --font-readable: 15px;
-  }
-
-  [data-theme="light"] {
-    --bille-empty:  #ddd4c0;
-    --bille-fill:   #a84e1a;
-    --bille-border: #a89070;
-    --die-active:   #8a6820;
-    --die-inactive: #ddd4c0;
-    --die-border-a: #8a6820;
-    --die-border-i: #c8b89a;
-    --section-bg:   #ede6d8;
-    --prog-done:    #d8ceb0;
-  }
-
-  body { display: block; padding: 2rem 1.5rem 4rem; }
-  .player-container { width: 100%; max-width: 920px; margin: 0 auto; }
-  .player-header { text-align: center; margin-bottom: 1.8rem; padding-bottom: 1.35rem; border-bottom: 1px solid var(--border); position: relative; }
-  .player-header::after { content: ''; position: absolute; bottom: -1px; left: 50%; transform: translateX(-50%); width: 80px; height: 1px; background: var(--ember); }
-  .player-label { font-family: 'Cinzel', serif; font-size: var(--font-readable); letter-spacing: .14em; color: var(--ember); text-transform: uppercase; margin-bottom: .55rem; }
-  .player-title { font-family: 'Cinzel Decorative', serif; font-size: clamp(1.55rem, 4.5vw, 2.45rem); color: var(--gold-l); margin: 0 0 .5rem; }
-  .player-subtitle { color: var(--text-m); font-size: var(--font-readable); font-style: italic; }
-  .player-panel { background: var(--bg2); border: 1px solid var(--border); border-radius: 4px; padding: 1rem; margin-bottom: 1.2rem; }
-  .player-panel.compact-panel { padding: .75rem .9rem .45rem; }
-  .sheet-section { background: transparent; border: none; border-radius: 0; padding: .35rem 0 1.1rem; margin-bottom: 1.1rem; }
-  .panel-title { font-family: 'Cinzel', serif; font-size: var(--font-readable); letter-spacing: .12em; color: var(--gold); text-transform: uppercase; margin-bottom: .8rem; }
-  .sheet-section .panel-title { text-align: center; color: var(--ember); margin-bottom: .9rem; }
-  .collapsible-panel { padding: 0; overflow: hidden; }
-  .collapsible-header { width: 100%; border: none; background: transparent; color: var(--gold); cursor: pointer; padding: .8rem 1rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; font-family: 'Cinzel', serif; font-size: var(--font-readable); letter-spacing: .12em; text-transform: uppercase; text-align: left; }
-  .collapsible-header:hover { color: var(--gold-l); }
-  .collapsible-toggle { color: var(--ember); transition: transform .2s; }
-  .collapsible-panel.is-closed .collapsible-toggle { transform: rotate(-90deg); }
-  .collapsible-content { padding: 0 1rem 1rem; }
-  .collapsible-panel.is-closed .collapsible-content { display: none; }
-  .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .65rem; align-items: end; }
-  .field-group { display: flex; flex-direction: column; gap: .2rem; }
-  .field-group.full { grid-column: auto; }
-  .field-label { font-family: 'Cinzel', serif; font-size: var(--font-readable); letter-spacing: .08em; color: var(--text-dim); text-transform: uppercase; }
-  .sheet-input, .sheet-select, .sheet-textarea { width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: 3px; color: var(--text); font-family: 'Crimson Pro', Georgia, serif; font-size: var(--font-readable); outline: none; padding: .45rem .55rem; }
-  .sheet-input:focus, .sheet-select:focus, .sheet-textarea:focus { border-color: var(--ember); }
-  .sheet-textarea { resize: vertical; min-height: 58px; line-height: 1.45; }
-  .class-preview { display: grid; grid-template-columns: 72px 1fr; gap: 1rem; align-items: center; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); }
-  .class-preview-icon { width: 72px; height: 72px; border-radius: 4px; border: 1px solid var(--border-h); overflow: hidden; background: var(--bg3); }
-  .class-preview-icon img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .class-preview-name { font-family: 'Cinzel', serif; font-size: 1.05rem; color: var(--gold-light); letter-spacing: .04em; }
-  .class-preview-desc { margin-top: .25rem; color: var(--text-muted); font-size: var(--font-readable); font-style: italic; line-height: 1.5; }
-  .placeholder-panel { color: var(--text-muted); font-size: var(--font-readable); font-style: italic; line-height: 1.6; }
-  .status-line { min-height: 18px; margin-top: .45rem; color: var(--ember-light); font-size: var(--font-readable); font-style: italic; text-align: center; }
-  .level-bar { display: flex; align-items: center; justify-content: center; gap: .5rem; flex-wrap: wrap; margin-bottom: .8rem; }
-  .level-pip, .bille-niveau { width: 28px; height: 28px; border-radius: 50%; background: var(--bg3); border: 1px solid var(--border); cursor: pointer; display: flex; align-items: center; justify-content: center; font-family: 'Cinzel', serif; font-size: var(--font-readable); font-weight: 600; color: var(--text-dim); transition: background .2s, border-color .2s, color .2s, transform .15s; }
-  .level-pip:hover, .bille-niveau:hover { border-color: var(--ember-light); transform: scale(1.08); }
-  .level-pip.filled, .bille-niveau.filled { background: var(--prog-done); border-color: var(--ember); color: var(--ember-light); }
-  .level-pip.current, .bille-niveau.current { background: var(--ember); border-color: var(--ember-light); color: #fff; box-shadow: 0 0 8px rgba(200,98,42,.35); }
-  .level-help { text-align: center; color: var(--text-dim); font-size: var(--font-readable); font-style: italic; }
-  .carac-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
-  .carac-col { background: var(--section-bg); border: 1px solid var(--border); border-radius: 4px; padding: .9rem .6rem 1rem; display: flex; flex-direction: column; align-items: center; gap: .9rem; }
-  .carac-name { font-family: 'Cinzel', serif; font-size: 1rem; font-weight: 700; letter-spacing: .08em; color: var(--gold-light); }
-  .billes-row { display: flex; gap: 6px; align-items: center; }
-  .bille { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--bille-border); background: var(--bille-empty); cursor: pointer; transition: background .15s, border-color .15s, transform .1s; display: inline-block; flex-shrink: 0; }
-  .bille.filled { background: var(--bille-fill); border-color: var(--ember-light); }
-  .bille.fixed { cursor: default; }
-  .bille.locked { cursor: default; opacity: .35; }
-  .bille:not(.locked):not(.fixed):hover { transform: scale(1.18); border-color: var(--ember-light); }
-  .block-label { font-family: 'Cinzel', serif; font-size: var(--font-readable); letter-spacing: .08em; color: var(--text-dim); text-transform: uppercase; }
-  .crit-block, .actions-block { display: flex; flex-direction: column; align-items: center; gap: 5px; width: 100%; }
-  .crit-dice { display: flex; gap: 8px; justify-content: center; }
-  .die-face { width: 32px; height: 32px; border-radius: 5px; border: 1.5px solid var(--die-border-i); background: var(--die-inactive); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background .15s, border-color .15s, transform .1s; }
-  .die-face.active { background: var(--die-active); border-color: var(--die-border-a); }
-  .die-face.fixed { cursor: default; }
-  .die-face.locked { cursor: default; opacity: .35; }
-  .die-face:not(.locked):not(.fixed):hover { transform: scale(1.1); border-color: var(--ember-light); }
-  .die-face svg { width: 21px; height: 21px; }
-  .die-dot { transition: fill .15s; }
-  .die-face.active .die-dot { fill: var(--bg); }
-  .die-face:not(.active) .die-dot { fill: var(--text-dim); }
-  .hearts-row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; align-items: center; }
-  .heart { font-size: 27px; cursor: pointer; line-height: 1; user-select: none; transition: transform .15s, opacity .15s, filter .15s; }
-  .heart.full { color: #c0332a; filter: drop-shadow(0 0 3px rgba(192,51,42,.45)); }
-  .heart.lost { color: #555; opacity: .28; filter: none; }
-  .heart:hover { transform: scale(1.2); }
-  .equipement-grid { display: grid; grid-template-columns: 1fr; gap: .9rem; }
-  .equipement-card, .inventaire-slot { background: var(--section-bg); border: 1px solid var(--border); border-radius: 4px; padding: .8rem; }
-  .equipement-title { font-family: 'Cinzel', serif; font-size: var(--font-readable); letter-spacing: .1em; color: var(--gold-light); text-transform: uppercase; margin-bottom: .6rem; }
-  .equipement-row { display: grid; grid-template-columns: 1fr 95px; gap: .6rem; margin-bottom: .6rem; }
-  .inventaire-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: .6rem; }
-  @media (max-width: 640px) { .form-grid, .class-preview, .carac-grid, .inventaire-grid { grid-template-columns: 1fr; } .field-group.full { grid-column: 1 / -1; } .equipement-row { grid-template-columns: 1fr; } }
+  :root { --bille-empty:#2a2318; --bille-fill:#c8622a; --bille-border:#52463a; --die-active:#c9a84c; --die-inactive:#2a2318; --die-border-a:#c9a84c; --die-border-i:#3a3026; --section-bg:#16120e; --prog-done:#2a2010; --font-readable:15px; }
+  [data-theme="light"] { --bille-empty:#ddd4c0; --bille-fill:#a84e1a; --bille-border:#a89070; --die-active:#8a6820; --die-inactive:#ddd4c0; --die-border-a:#8a6820; --die-border-i:#c8b89a; --section-bg:#ede6d8; --prog-done:#d8ceb0; }
+  body { display:block; padding:2rem 1.5rem 4rem; }
+  .player-container { width:100%; max-width:920px; margin:0 auto; }
+  .player-header { text-align:center; margin-bottom:1.8rem; padding-bottom:1.35rem; border-bottom:1px solid var(--border); position:relative; }
+  .player-header::after { content:''; position:absolute; bottom:-1px; left:50%; transform:translateX(-50%); width:80px; height:1px; background:var(--ember); }
+  .player-label { font-family:'Cinzel',serif; font-size:var(--font-readable); letter-spacing:.14em; color:var(--ember); text-transform:uppercase; margin-bottom:.55rem; }
+  .player-title { font-family:'Cinzel Decorative',serif; font-size:clamp(1.55rem,4.5vw,2.45rem); color:var(--gold-l); margin:0 0 .5rem; }
+  .player-subtitle { color:var(--text-m); font-size:var(--font-readable); font-style:italic; }
+  .player-panel { background:var(--bg2); border:1px solid var(--border); border-radius:4px; padding:1rem; margin-bottom:1.2rem; }
+  .player-panel.compact-panel { padding:.75rem .9rem .45rem; }
+  .sheet-section { background:transparent; border:none; border-radius:0; padding:.35rem 0 1.1rem; margin-bottom:1.1rem; }
+  .panel-title { font-family:'Cinzel',serif; font-size:var(--font-readable); letter-spacing:.12em; color:var(--gold); text-transform:uppercase; margin-bottom:.8rem; }
+  .sheet-section .panel-title { text-align:center; color:var(--ember); margin-bottom:.9rem; }
+  .collapsible-panel { padding:0; overflow:hidden; }
+  .collapsible-header { width:100%; border:none; background:transparent; color:var(--gold); cursor:pointer; padding:.8rem 1rem; display:flex; align-items:center; justify-content:space-between; gap:1rem; font-family:'Cinzel',serif; font-size:var(--font-readable); letter-spacing:.12em; text-transform:uppercase; text-align:left; }
+  .collapsible-header:hover { color:var(--gold-l); }
+  .collapsible-toggle { color:var(--ember); transition:transform .2s; }
+  .collapsible-panel.is-closed .collapsible-toggle { transform:rotate(-90deg); }
+  .collapsible-content { padding:0 1rem 1rem; }
+  .collapsible-panel.is-closed .collapsible-content { display:none; }
+  .form-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:.65rem; align-items:end; }
+  .field-group { display:flex; flex-direction:column; gap:.2rem; }
+  .field-group.full { grid-column:auto; }
+  .field-label { font-family:'Cinzel',serif; font-size:var(--font-readable); letter-spacing:.08em; color:var(--text-dim); text-transform:uppercase; }
+  .sheet-input,.sheet-select,.sheet-textarea { width:100%; background:var(--bg3); border:1px solid var(--border); border-radius:3px; color:var(--text); font-family:'Crimson Pro',Georgia,serif; font-size:var(--font-readable); outline:none; padding:.45rem .55rem; }
+  .sheet-input:focus,.sheet-select:focus,.sheet-textarea:focus { border-color:var(--ember); }
+  .sheet-textarea { resize:vertical; min-height:58px; line-height:1.45; }
+  .class-preview { display:grid; grid-template-columns:72px 1fr; gap:1rem; align-items:center; margin-top:1rem; padding-top:1rem; border-top:1px solid var(--border); }
+  .class-preview-icon { width:72px; height:72px; border-radius:4px; border:1px solid var(--border-h); overflow:hidden; background:var(--bg3); }
+  .class-preview-icon img { width:100%; height:100%; object-fit:cover; display:block; }
+  .class-preview-name { font-family:'Cinzel',serif; font-size:1.05rem; color:var(--gold-light); letter-spacing:.04em; }
+  .class-preview-desc { margin-top:.25rem; color:var(--text-muted); font-size:var(--font-readable); font-style:italic; line-height:1.5; }
+  .style-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:.65rem; margin-top:1rem; padding-top:1rem; border-top:1px solid var(--border); }
+  .placeholder-panel { color:var(--text-muted); font-size:var(--font-readable); font-style:italic; line-height:1.6; }
+  .status-line { min-height:18px; margin-top:.45rem; color:var(--ember-light); font-size:var(--font-readable); font-style:italic; text-align:center; }
+  .level-bar { display:flex; align-items:center; justify-content:center; gap:.5rem; flex-wrap:wrap; margin-bottom:.8rem; }
+  .level-pip,.bille-niveau { width:28px; height:28px; border-radius:50%; background:var(--bg3); border:1px solid var(--border); cursor:pointer; display:flex; align-items:center; justify-content:center; font-family:'Cinzel',serif; font-size:var(--font-readable); font-weight:600; color:var(--text-dim); transition:background .2s,border-color .2s,color .2s,transform .15s; }
+  .level-pip:hover,.bille-niveau:hover { border-color:var(--ember-light); transform:scale(1.08); }
+  .level-pip.filled,.bille-niveau.filled { background:var(--prog-done); border-color:var(--ember); color:var(--ember-light); }
+  .level-pip.current,.bille-niveau.current { background:var(--ember); border-color:var(--ember-light); color:#fff; box-shadow:0 0 8px rgba(200,98,42,.35); }
+  .level-help { text-align:center; color:var(--text-dim); font-size:var(--font-readable); font-style:italic; }
+  .carac-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; }
+  .carac-col { background:var(--section-bg); border:1px solid var(--border); border-radius:4px; padding:.9rem .6rem 1rem; display:flex; flex-direction:column; align-items:center; gap:.9rem; }
+  .carac-head { text-align:center; min-height:3.1rem; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:.2rem; }
+  .carac-name { font-family:'Cinzel',serif; font-size:1rem; font-weight:700; letter-spacing:.08em; color:var(--gold-light); }
+  .carac-style { color:var(--text-muted); font-size:var(--font-readable); font-style:italic; line-height:1.25; min-height:1.25em; }
+  .billes-row { display:flex; gap:6px; align-items:center; }
+  .bille { width:22px; height:22px; border-radius:50%; border:1.5px solid var(--bille-border); background:var(--bille-empty); cursor:pointer; transition:background .15s,border-color .15s,transform .1s; display:inline-block; flex-shrink:0; }
+  .bille.filled { background:var(--bille-fill); border-color:var(--ember-light); }
+  .bille.fixed { cursor:default; }
+  .bille.locked { cursor:default; opacity:.35; }
+  .bille:not(.locked):not(.fixed):hover { transform:scale(1.18); border-color:var(--ember-light); }
+  .block-label { font-family:'Cinzel',serif; font-size:var(--font-readable); letter-spacing:.08em; color:var(--text-dim); text-transform:uppercase; }
+  .crit-block,.actions-block { display:flex; flex-direction:column; align-items:center; gap:5px; width:100%; }
+  .crit-dice { display:flex; gap:8px; justify-content:center; }
+  .die-face { width:32px; height:32px; border-radius:5px; border:1.5px solid var(--die-border-i); background:var(--die-inactive); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background .15s,border-color .15s,transform .1s; }
+  .die-face.active { background:var(--die-active); border-color:var(--die-border-a); }
+  .die-face.fixed { cursor:default; }
+  .die-face.locked { cursor:default; opacity:.35; }
+  .die-face:not(.locked):not(.fixed):hover { transform:scale(1.1); border-color:var(--ember-light); }
+  .die-face svg { width:21px; height:21px; }
+  .die-dot { transition:fill .15s; }
+  .die-face.active .die-dot { fill:var(--bg); }
+  .die-face:not(.active) .die-dot { fill:var(--text-dim); }
+  .hearts-row { display:flex; gap:8px; flex-wrap:wrap; justify-content:center; align-items:center; }
+  .heart { font-size:27px; cursor:pointer; line-height:1; user-select:none; transition:transform .15s,opacity .15s,filter .15s; }
+  .heart.full { color:#c0332a; filter:drop-shadow(0 0 3px rgba(192,51,42,.45)); }
+  .heart.lost { color:#555; opacity:.28; filter:none; }
+  .heart:hover { transform:scale(1.2); }
+  .equipement-grid { display:grid; grid-template-columns:1fr; gap:.9rem; }
+  .equipement-card,.inventaire-slot { background:var(--section-bg); border:1px solid var(--border); border-radius:4px; padding:.8rem; }
+  .equipement-title { font-family:'Cinzel',serif; font-size:var(--font-readable); letter-spacing:.1em; color:var(--gold-light); text-transform:uppercase; margin-bottom:.6rem; }
+  .equipement-row { display:grid; grid-template-columns:1fr 95px; gap:.6rem; margin-bottom:.6rem; }
+  .inventaire-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:.6rem; }
+  @media (max-width:640px) { .form-grid,.style-grid,.class-preview,.carac-grid,.inventaire-grid { grid-template-columns:1fr; } .field-group.full { grid-column:1 / -1; } .equipement-row { grid-template-columns:1fr; } }
 </style>
 </head>
 <body>
@@ -123,6 +103,7 @@
         <div class="field-group"><label class="field-label" for="character-name">Nom du personnage</label><input class="sheet-input" id="character-name" type="text" placeholder="Nom du personnage" autocomplete="off"></div>
         <div class="field-group full"><label class="field-label" for="class-select">Classe</label><select class="sheet-select" id="class-select"></select></div>
       </div>
+      <div class="style-grid" id="style-grid"></div>
       <div class="class-preview" id="class-preview"></div>
       <div class="status-line" id="save-status"></div>
     </div>
@@ -151,27 +132,30 @@ const DIE_DOTS = { 4: [[.3,.3],[.7,.3],[.3,.7],[.7,.7]], 5: [[.3,.3],[.7,.3],[.5
 function dieSVG(n) { return `<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">${(DIE_DOTS[n] || []).map(([cx, cy]) => `<circle class="die-dot" cx="${cx * 20}" cy="${cy * 20}" r="2.3"/>`).join('')}</svg>`; }
 function escapeAttr(value) { return String(value ?? '').replaceAll('&','&amp;').replaceAll('"','&quot;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
 function escapeText(value) { return String(value ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+function defaultStyles() { return Object.fromEntries(STATS.map(s => [s.key, ''])); }
 function defaultSheetState() { return { niveau: 1, carac: Object.fromEntries(STATS.map(c => [c.key, { val: 1, act: 1, crit: [true, false, false] }])), pv: Array.from({ length: BASE_PV }, () => ({ lost: false })), equipement: { main1: { nom: '', valeur: '', desc: '' }, main2: { nom: '', valeur: '', desc: '' }, armure: { nom: '', valeur: '', desc: '' } }, inventaire: Array.from({ length: 6 }, () => '') }; }
-function defaultPlayerState() { return { id: PLAYER_ID, joueur: PLAYER_META.label, nom: PLAYER_META.personnage, classeId: PLAYER_META.classeId, sheet: defaultSheetState() }; }
+function defaultPlayerState() { return { id: PLAYER_ID, joueur: PLAYER_META.label, nom: PLAYER_META.personnage, classeId: PLAYER_META.classeId, styles: defaultStyles(), sheet: defaultSheetState() }; }
 let state = defaultPlayerState();
 let statusTimer = null;
 
 function normalizeSheet(sheet) { const fallback = defaultSheetState(); const normalized = { ...fallback, ...(sheet ?? {}) }; normalized.carac = normalized.carac ?? {}; normalized.carac = Object.fromEntries(STATS.map(({ key }) => [key, normalized.carac[key] ?? fallback.carac[key]])); normalized.pv = Array.isArray(normalized.pv) ? normalized.pv : fallback.pv; normalized.niveau = Number.isInteger(normalized.niveau) ? normalized.niveau : fallback.niveau; normalized.equipement = { main1: { nom: normalized.equipement?.main1?.nom ?? '', valeur: normalized.equipement?.main1?.valeur ?? '', desc: normalized.equipement?.main1?.desc ?? '' }, main2: { nom: normalized.equipement?.main2?.nom ?? '', valeur: normalized.equipement?.main2?.valeur ?? '', desc: normalized.equipement?.main2?.desc ?? '' }, armure: { nom: normalized.equipement?.armure?.nom ?? '', valeur: normalized.equipement?.armure?.valeur ?? '', desc: normalized.equipement?.armure?.desc ?? '' } }; normalized.inventaire = Array.from({ length: 6 }, (_, i) => normalized.inventaire?.[i] ?? ''); return normalized; }
+function normalizeStyles(styles) { const fallback = defaultStyles(); return Object.fromEntries(STATS.map(({ key }) => [key, styles?.[key] ?? fallback[key]])); }
 function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); showStatus('Sauvegardé automatiquement'); }
-function load() { try { const raw = localStorage.getItem(STORAGE_KEY); if (!raw) return; state = { ...defaultPlayerState(), ...JSON.parse(raw) }; state.sheet = normalizeSheet(state.sheet); } catch {} }
+function load() { try { const raw = localStorage.getItem(STORAGE_KEY); if (!raw) return; state = { ...defaultPlayerState(), ...JSON.parse(raw) }; state.sheet = normalizeSheet(state.sheet); state.styles = normalizeStyles(state.styles); } catch {} }
 function showStatus(message) { const el = document.getElementById('save-status'); if (!el) return; el.textContent = message; clearTimeout(statusTimer); statusTimer = setTimeout(() => { el.textContent = ''; }, 1800); }
 function toggleIdentityPanel() { const panel = document.getElementById('identity-panel'); panel.classList.toggle('is-closed'); localStorage.setItem(UI_STORAGE_KEY, JSON.stringify({ identityClosed: panel.classList.contains('is-closed') })); }
 function restoreIdentityPanel() { try { const raw = localStorage.getItem(UI_STORAGE_KEY); if (!raw) return; const ui = JSON.parse(raw); if (ui.identityClosed) document.getElementById('identity-panel').classList.add('is-closed'); } catch {} }
 function renderClassSelect() { const select = document.getElementById('class-select'); select.innerHTML = CLASSES.map(cls => `<option value="${cls.id}"${cls.id === state.classeId ? ' selected' : ''}>${cls.nom}</option>`).join(''); select.onchange = () => { state.classeId = select.value; save(); renderAll(); }; }
 function renderIdentity() { document.getElementById('player-label').textContent = state.joueur || PLAYER_META.label; document.getElementById('player-title').textContent = state.nom || 'Nouveau personnage'; const classMeta = getClassMeta(state.classeId); document.getElementById('player-subtitle').textContent = `${classMeta.article} ${classMeta.nom}`; const playerInput = document.getElementById('player-name'); playerInput.value = state.joueur; playerInput.oninput = () => { state.joueur = playerInput.value; document.getElementById('player-label').textContent = state.joueur || PLAYER_META.label; save(); }; const characterInput = document.getElementById('character-name'); characterInput.value = state.nom; characterInput.oninput = () => { state.nom = characterInput.value; document.getElementById('player-title').textContent = state.nom || 'Nouveau personnage'; save(); }; }
+function renderStylesConfig() { const grid = document.getElementById('style-grid'); grid.innerHTML = ''; STATS.forEach(({ key, label }) => { const wrap = document.createElement('div'); wrap.className = 'field-group'; wrap.innerHTML = `<label class="field-label" for="style-${key}">Style de ${label}</label><input class="sheet-input" id="style-${key}" type="text" placeholder="Ex. brutal, précis, mystique" value="${escapeAttr(state.styles[key])}">`; const input = wrap.querySelector('input'); input.oninput = () => { state.styles[key] = input.value; save(); renderSheetCaracs(); }; grid.appendChild(wrap); }); }
 function renderClassPreview() { const classMeta = getClassMeta(state.classeId); document.getElementById('class-preview').innerHTML = `<div class="class-preview-icon"><img src="${classMeta.icone}" alt="${classMeta.nom}" onerror="this.style.display='none'"></div><div><div class="class-preview-name">${classMeta.article} ${classMeta.nom}</div><div class="class-preview-desc">${classMeta.ambiance}</div></div>`; }
 function renderSheetLevel() { const row = document.getElementById('sheet-level-bar'); row.innerHTML = ''; for (let i = 0; i < MAX_LVL; i++) { const level = i + 1; const pip = document.createElement('div'); pip.className = ['level-pip', level <= state.sheet.niveau ? 'filled' : '', level === state.sheet.niveau ? 'current' : ''].filter(Boolean).join(' '); pip.textContent = level; pip.title = `Niveau ${level}`; pip.onclick = () => { state.sheet.niveau = level; save(); renderSheetLevel(); }; row.appendChild(pip); } }
-function renderSheetCaracs() { const grid = document.getElementById('sheet-carac-grid'); grid.innerHTML = ''; STATS.forEach(({ key, label }) => { const data = state.sheet.carac[key]; const col = document.createElement('div'); col.className = 'carac-col'; col.innerHTML = `<div class="carac-name">${label}</div>`; const valRow = document.createElement('div'); valRow.className = 'billes-row'; for (let i = 0; i < MAX_VAL; i++) { const value = i + 1; const b = document.createElement('div'); b.className = `bille${value <= data.val ? ' filled' : ''}${value === 1 ? ' fixed' : ''}`; b.title = `${label} ${value}`; b.onclick = () => { state.sheet.carac[key].val = value; save(); renderSheetCaracs(); }; valRow.appendChild(b); } col.appendChild(valRow); const critBlock = document.createElement('div'); critBlock.className = 'crit-block'; critBlock.innerHTML = '<div class="block-label">Critique</div>'; const diceRow = document.createElement('div'); diceRow.className = 'crit-dice'; CRIT_FACES.forEach((face, fi) => { const die = document.createElement('div'); die.innerHTML = dieSVG(face); die.className = `die-face${data.crit[fi] ? ' active' : ''}${fi === 0 ? ' fixed' : ''}`; die.title = `CRIT ${label} : ${face}`; if (fi > 0) die.onclick = () => { state.sheet.carac[key].crit[fi] = !state.sheet.carac[key].crit[fi]; if (!state.sheet.carac[key].crit[1]) state.sheet.carac[key].crit[2] = false; save(); renderSheetCaracs(); }; diceRow.appendChild(die); }); critBlock.appendChild(diceRow); col.appendChild(critBlock); const actBlock = document.createElement('div'); actBlock.className = 'actions-block'; actBlock.innerHTML = '<div class="block-label">Actions / tour</div>'; const actRow = document.createElement('div'); actRow.className = 'billes-row'; for (let i = 0; i < MAX_ACT; i++) { const value = i + 1; const b = document.createElement('div'); b.className = `bille${value <= data.act ? ' filled' : ''}${value === 1 ? ' fixed' : ''}`; b.title = `${label} : ${value} action${value > 1 ? 's' : ''}/tour`; b.onclick = () => { state.sheet.carac[key].act = value; save(); renderSheetCaracs(); }; actRow.appendChild(b); } actBlock.appendChild(actRow); col.appendChild(actBlock); grid.appendChild(col); }); }
+function renderSheetCaracs() { const grid = document.getElementById('sheet-carac-grid'); grid.innerHTML = ''; STATS.forEach(({ key, label }) => { const data = state.sheet.carac[key]; const style = state.styles?.[key] ?? ''; const col = document.createElement('div'); col.className = 'carac-col'; col.innerHTML = `<div class="carac-head"><div class="carac-name">${label}</div><div class="carac-style">${escapeText(style)}</div></div>`; const valRow = document.createElement('div'); valRow.className = 'billes-row'; for (let i = 0; i < MAX_VAL; i++) { const value = i + 1; const b = document.createElement('div'); b.className = `bille${value <= data.val ? ' filled' : ''}${value === 1 ? ' fixed' : ''}`; b.title = `${label} ${value}`; b.onclick = () => { state.sheet.carac[key].val = value; save(); renderSheetCaracs(); }; valRow.appendChild(b); } col.appendChild(valRow); const critBlock = document.createElement('div'); critBlock.className = 'crit-block'; critBlock.innerHTML = '<div class="block-label">Critique</div>'; const diceRow = document.createElement('div'); diceRow.className = 'crit-dice'; CRIT_FACES.forEach((face, fi) => { const die = document.createElement('div'); die.innerHTML = dieSVG(face); die.className = `die-face${data.crit[fi] ? ' active' : ''}${fi === 0 ? ' fixed' : ''}`; die.title = `CRIT ${label} : ${face}`; if (fi > 0) die.onclick = () => { state.sheet.carac[key].crit[fi] = !state.sheet.carac[key].crit[fi]; if (!state.sheet.carac[key].crit[1]) state.sheet.carac[key].crit[2] = false; save(); renderSheetCaracs(); }; diceRow.appendChild(die); }); critBlock.appendChild(diceRow); col.appendChild(critBlock); const actBlock = document.createElement('div'); actBlock.className = 'actions-block'; actBlock.innerHTML = '<div class="block-label">Actions / tour</div>'; const actRow = document.createElement('div'); actRow.className = 'billes-row'; for (let i = 0; i < MAX_ACT; i++) { const value = i + 1; const b = document.createElement('div'); b.className = `bille${value <= data.act ? ' filled' : ''}${value === 1 ? ' fixed' : ''}`; b.title = `${label} : ${value} action${value > 1 ? 's' : ''}/tour`; b.onclick = () => { state.sheet.carac[key].act = value; save(); renderSheetCaracs(); }; actRow.appendChild(b); } actBlock.appendChild(actRow); col.appendChild(actBlock); grid.appendChild(col); }); }
 function renderSheetPV() { const row = document.getElementById('sheet-hearts-row'); row.innerHTML = ''; state.sheet.pv.forEach((h, i) => { const el = document.createElement('span'); el.className = `heart ${h.lost ? 'lost' : 'full'}`; el.textContent = '♥'; el.title = h.lost ? 'Blessure — cliquer pour récupérer' : 'PV — cliquer pour perdre'; el.onclick = () => { state.sheet.pv[i].lost = !state.sheet.pv[i].lost; save(); renderSheetPV(); }; row.appendChild(el); }); }
 function renderSheetEquipement() { const grid = document.getElementById('sheet-equipement-grid'); grid.innerHTML = ''; [{ key: 'main1', title: 'Main principale', valueLabel: 'DEG' }, { key: 'main2', title: 'Main secondaire', valueLabel: 'DEG' }, { key: 'armure', title: 'Armure', valueLabel: 'ARM' }].forEach(item => { const data = state.sheet.equipement[item.key]; const card = document.createElement('div'); card.className = 'equipement-card'; card.innerHTML = `<div class="equipement-title">${item.title}</div><div class="equipement-row"><input class="sheet-input" type="text" placeholder="Nom de l'objet" value="${escapeAttr(data.nom)}"><input class="sheet-input" type="text" placeholder="${item.valueLabel}" value="${escapeAttr(data.valeur)}"></div><textarea class="sheet-textarea" placeholder="Description">${escapeText(data.desc)}</textarea>`; const [nomInput, valeurInput] = card.querySelectorAll('input'); const descInput = card.querySelector('textarea'); nomInput.oninput = () => { state.sheet.equipement[item.key].nom = nomInput.value; save(); }; valeurInput.oninput = () => { state.sheet.equipement[item.key].valeur = valeurInput.value; save(); }; descInput.oninput = () => { state.sheet.equipement[item.key].desc = descInput.value; save(); }; grid.appendChild(card); }); }
 function renderSheetInventaire() { const grid = document.getElementById('sheet-inventaire-grid'); grid.innerHTML = ''; state.sheet.inventaire.forEach((value, i) => { const input = document.createElement('input'); input.className = 'sheet-input inventaire-slot'; input.type = 'text'; input.placeholder = `Objet ${i + 1}`; input.value = value; input.oninput = () => { state.sheet.inventaire[i] = input.value; save(); }; grid.appendChild(input); }); }
 function renderSheet() { renderSheetLevel(); renderSheetCaracs(); renderSheetPV(); renderSheetEquipement(); renderSheetInventaire(); }
-function renderAll() { renderIdentity(); renderClassSelect(); renderClassPreview(); renderSheet(); restoreIdentityPanel(); }
+function renderAll() { renderIdentity(); renderClassSelect(); renderStylesConfig(); renderClassPreview(); renderSheet(); restoreIdentityPanel(); }
 load(); renderAll();
 </script>
 </body>
