@@ -47,6 +47,13 @@
   .sheet-section { background: transparent; border: none; border-radius: 0; padding: .35rem 0 1.1rem; margin-bottom: 1.1rem; }
   .panel-title { font-family: 'Cinzel', serif; font-size: var(--font-readable); letter-spacing: .12em; color: var(--gold); text-transform: uppercase; margin-bottom: .8rem; }
   .sheet-section .panel-title { text-align: center; color: var(--ember); margin-bottom: .9rem; }
+  .collapsible-panel { padding: 0; overflow: hidden; }
+  .collapsible-header { width: 100%; border: none; background: transparent; color: var(--gold); cursor: pointer; padding: .8rem 1rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; font-family: 'Cinzel', serif; font-size: var(--font-readable); letter-spacing: .12em; text-transform: uppercase; text-align: left; }
+  .collapsible-header:hover { color: var(--gold-l); }
+  .collapsible-toggle { color: var(--ember); transition: transform .2s; }
+  .collapsible-panel.is-closed .collapsible-toggle { transform: rotate(-90deg); }
+  .collapsible-content { padding: 0 1rem 1rem; }
+  .collapsible-panel.is-closed .collapsible-content { display: none; }
   .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .65rem; align-items: end; }
   .field-group { display: flex; flex-direction: column; gap: .2rem; }
   .field-group.full { grid-column: auto; }
@@ -54,7 +61,7 @@
   .sheet-input, .sheet-select, .sheet-textarea { width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: 3px; color: var(--text); font-family: 'Crimson Pro', Georgia, serif; font-size: var(--font-readable); outline: none; padding: .45rem .55rem; }
   .sheet-input:focus, .sheet-select:focus, .sheet-textarea:focus { border-color: var(--ember); }
   .sheet-textarea { resize: vertical; min-height: 58px; line-height: 1.45; }
-  .class-preview { display: grid; grid-template-columns: 72px 1fr; gap: 1rem; align-items: center; }
+  .class-preview { display: grid; grid-template-columns: 72px 1fr; gap: 1rem; align-items: center; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); }
   .class-preview-icon { width: 72px; height: 72px; border-radius: 4px; border: 1px solid var(--border-h); overflow: hidden; background: var(--bg3); }
   .class-preview-icon img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .class-preview-name { font-family: 'Cinzel', serif; font-size: 1.05rem; color: var(--gold-light); letter-spacing: .04em; }
@@ -93,47 +100,32 @@
   .heart.full { color: #c0332a; filter: drop-shadow(0 0 3px rgba(192,51,42,.45)); }
   .heart.lost { color: #555; opacity: .28; filter: none; }
   .heart:hover { transform: scale(1.2); }
-
   .equipement-grid { display: grid; grid-template-columns: 1fr; gap: .9rem; }
   .equipement-card, .inventaire-slot { background: var(--section-bg); border: 1px solid var(--border); border-radius: 4px; padding: .8rem; }
   .equipement-title { font-family: 'Cinzel', serif; font-size: var(--font-readable); letter-spacing: .1em; color: var(--gold-light); text-transform: uppercase; margin-bottom: .6rem; }
   .equipement-row { display: grid; grid-template-columns: 1fr 95px; gap: .6rem; margin-bottom: .6rem; }
   .inventaire-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: .6rem; }
-
-  @media (max-width: 640px) {
-    .form-grid, .class-preview, .carac-grid, .inventaire-grid { grid-template-columns: 1fr; }
-    .field-group.full { grid-column: 1 / -1; }
-    .equipement-row { grid-template-columns: 1fr; }
-  }
+  @media (max-width: 640px) { .form-grid, .class-preview, .carac-grid, .inventaire-grid { grid-template-columns: 1fr; } .field-group.full { grid-column: 1 / -1; } .equipement-row { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
 <div class="player-container">
 
-  <div class="top-nav">
-    <a class="back-link" href="index.html">← Accueil</a>
-    <button class="theme-toggle" onclick="toggleTheme()">☀ Thème clair</button>
-  </div>
+  <div class="top-nav"><a class="back-link" href="index.html">← Accueil</a><button class="theme-toggle" onclick="toggleTheme()">☀ Thème clair</button></div>
 
-  <header class="player-header">
-    <div class="player-label" id="player-label">Personnage</div>
-    <h1 class="player-title" id="player-title">Nouveau personnage</h1>
-    <div class="player-subtitle" id="player-subtitle">Feuille intégrée en construction</div>
-  </header>
+  <header class="player-header"><div class="player-label" id="player-label">Personnage</div><h1 class="player-title" id="player-title">Nouveau personnage</h1><div class="player-subtitle" id="player-subtitle">Feuille intégrée en construction</div></header>
 
-  <section class="player-panel compact-panel">
-    <div class="panel-title">Identité</div>
-    <div class="form-grid">
-      <div class="field-group"><label class="field-label" for="player-name">Prénom du joueur</label><input class="sheet-input" id="player-name" type="text" placeholder="Prénom du joueur" autocomplete="off"></div>
-      <div class="field-group"><label class="field-label" for="character-name">Nom du personnage</label><input class="sheet-input" id="character-name" type="text" placeholder="Nom du personnage" autocomplete="off"></div>
-      <div class="field-group full"><label class="field-label" for="class-select">Classe</label><select class="sheet-select" id="class-select"></select></div>
+  <section class="player-panel compact-panel collapsible-panel" id="identity-panel">
+    <button class="collapsible-header" type="button" onclick="toggleIdentityPanel()"><span>Configuration du personnage</span><span class="collapsible-toggle">▾</span></button>
+    <div class="collapsible-content">
+      <div class="form-grid">
+        <div class="field-group"><label class="field-label" for="player-name">Prénom du joueur</label><input class="sheet-input" id="player-name" type="text" placeholder="Prénom du joueur" autocomplete="off"></div>
+        <div class="field-group"><label class="field-label" for="character-name">Nom du personnage</label><input class="sheet-input" id="character-name" type="text" placeholder="Nom du personnage" autocomplete="off"></div>
+        <div class="field-group full"><label class="field-label" for="class-select">Classe</label><select class="sheet-select" id="class-select"></select></div>
+      </div>
+      <div class="class-preview" id="class-preview"></div>
+      <div class="status-line" id="save-status"></div>
     </div>
-    <div class="status-line" id="save-status"></div>
-  </section>
-
-  <section class="player-panel">
-    <div class="panel-title">Classe sélectionnée</div>
-    <div class="class-preview" id="class-preview"></div>
   </section>
 
   <section class="player-panel sheet-section"><div class="panel-title">Niveau</div><div class="level-bar" id="sheet-level-bar"></div><div class="level-help">Cliquez sur une bille pour définir directement le niveau</div></section>
@@ -142,10 +134,7 @@
   <section class="player-panel sheet-section"><div class="panel-title">Équipement</div><div class="equipement-grid" id="sheet-equipement-grid"></div></section>
   <section class="player-panel sheet-section"><div class="panel-title">Inventaire</div><div class="inventaire-grid" id="sheet-inventaire-grid"></div></section>
 
-  <section class="player-panel">
-    <div class="panel-title">Arbre de compétences</div>
-    <div class="placeholder-panel">Prochaine étape : intégrer ici le moteur de l'arbre de compétences selon la classe sélectionnée.</div>
-  </section>
+  <section class="player-panel"><div class="panel-title">Arbre de compétences</div><div class="placeholder-panel">Prochaine étape : intégrer ici le moteur de l'arbre de compétences selon la classe sélectionnée.</div></section>
 
 </div>
 
@@ -154,6 +143,7 @@ const params = new URLSearchParams(window.location.search);
 const PLAYER_ID = params.get('id') || 'joueur1';
 const PLAYER_META = getPlayerMeta(PLAYER_ID);
 const STORAGE_KEY = `personnage_${PLAYER_ID}`;
+const UI_STORAGE_KEY = `personnage_ui_${PLAYER_ID}`;
 const MAX_VAL = 5, MAX_ACT = 3, MAX_LVL = 10, BASE_PV = 6;
 const CRIT_FACES = [6, 5, 4];
 const DIE_DOTS = { 4: [[.3,.3],[.7,.3],[.3,.7],[.7,.7]], 5: [[.3,.3],[.7,.3],[.5,.5],[.3,.7],[.7,.7]], 6: [[.3,.25],[.7,.25],[.3,.5],[.7,.5],[.3,.75],[.7,.75]] };
@@ -161,73 +151,27 @@ const DIE_DOTS = { 4: [[.3,.3],[.7,.3],[.3,.7],[.7,.7]], 5: [[.3,.3],[.7,.3],[.5
 function dieSVG(n) { return `<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">${(DIE_DOTS[n] || []).map(([cx, cy]) => `<circle class="die-dot" cx="${cx * 20}" cy="${cy * 20}" r="2.3"/>`).join('')}</svg>`; }
 function escapeAttr(value) { return String(value ?? '').replaceAll('&','&amp;').replaceAll('"','&quot;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
 function escapeText(value) { return String(value ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
-
-function defaultSheetState() {
-  return {
-    niveau: 1,
-    carac: Object.fromEntries(STATS.map(c => [c.key, { val: 1, act: 1, crit: [true, false, false] }])),
-    pv: Array.from({ length: BASE_PV }, () => ({ lost: false })),
-    equipement: { main1: { nom: '', valeur: '', desc: '' }, main2: { nom: '', valeur: '', desc: '' }, armure: { nom: '', valeur: '', desc: '' } },
-    inventaire: Array.from({ length: 6 }, () => ''),
-  };
-}
+function defaultSheetState() { return { niveau: 1, carac: Object.fromEntries(STATS.map(c => [c.key, { val: 1, act: 1, crit: [true, false, false] }])), pv: Array.from({ length: BASE_PV }, () => ({ lost: false })), equipement: { main1: { nom: '', valeur: '', desc: '' }, main2: { nom: '', valeur: '', desc: '' }, armure: { nom: '', valeur: '', desc: '' } }, inventaire: Array.from({ length: 6 }, () => '') }; }
 function defaultPlayerState() { return { id: PLAYER_ID, joueur: PLAYER_META.label, nom: PLAYER_META.personnage, classeId: PLAYER_META.classeId, sheet: defaultSheetState() }; }
 let state = defaultPlayerState();
 let statusTimer = null;
 
-function normalizeSheet(sheet) {
-  const fallback = defaultSheetState();
-  const normalized = { ...fallback, ...(sheet ?? {}) };
-  normalized.carac = normalized.carac ?? {};
-  normalized.carac = Object.fromEntries(STATS.map(({ key }) => [key, normalized.carac[key] ?? fallback.carac[key]]));
-  normalized.pv = Array.isArray(normalized.pv) ? normalized.pv : fallback.pv;
-  normalized.niveau = Number.isInteger(normalized.niveau) ? normalized.niveau : fallback.niveau;
-  normalized.equipement = {
-    main1: { nom: normalized.equipement?.main1?.nom ?? '', valeur: normalized.equipement?.main1?.valeur ?? '', desc: normalized.equipement?.main1?.desc ?? '' },
-    main2: { nom: normalized.equipement?.main2?.nom ?? '', valeur: normalized.equipement?.main2?.valeur ?? '', desc: normalized.equipement?.main2?.desc ?? '' },
-    armure: { nom: normalized.equipement?.armure?.nom ?? '', valeur: normalized.equipement?.armure?.valeur ?? '', desc: normalized.equipement?.armure?.desc ?? '' },
-  };
-  normalized.inventaire = Array.from({ length: 6 }, (_, i) => normalized.inventaire?.[i] ?? '');
-  return normalized;
-}
-
+function normalizeSheet(sheet) { const fallback = defaultSheetState(); const normalized = { ...fallback, ...(sheet ?? {}) }; normalized.carac = normalized.carac ?? {}; normalized.carac = Object.fromEntries(STATS.map(({ key }) => [key, normalized.carac[key] ?? fallback.carac[key]])); normalized.pv = Array.isArray(normalized.pv) ? normalized.pv : fallback.pv; normalized.niveau = Number.isInteger(normalized.niveau) ? normalized.niveau : fallback.niveau; normalized.equipement = { main1: { nom: normalized.equipement?.main1?.nom ?? '', valeur: normalized.equipement?.main1?.valeur ?? '', desc: normalized.equipement?.main1?.desc ?? '' }, main2: { nom: normalized.equipement?.main2?.nom ?? '', valeur: normalized.equipement?.main2?.valeur ?? '', desc: normalized.equipement?.main2?.desc ?? '' }, armure: { nom: normalized.equipement?.armure?.nom ?? '', valeur: normalized.equipement?.armure?.valeur ?? '', desc: normalized.equipement?.armure?.desc ?? '' } }; normalized.inventaire = Array.from({ length: 6 }, (_, i) => normalized.inventaire?.[i] ?? ''); return normalized; }
 function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); showStatus('Sauvegardé automatiquement'); }
 function load() { try { const raw = localStorage.getItem(STORAGE_KEY); if (!raw) return; state = { ...defaultPlayerState(), ...JSON.parse(raw) }; state.sheet = normalizeSheet(state.sheet); } catch {} }
-function showStatus(message) { const el = document.getElementById('save-status'); el.textContent = message; clearTimeout(statusTimer); statusTimer = setTimeout(() => { el.textContent = ''; }, 1800); }
-
+function showStatus(message) { const el = document.getElementById('save-status'); if (!el) return; el.textContent = message; clearTimeout(statusTimer); statusTimer = setTimeout(() => { el.textContent = ''; }, 1800); }
+function toggleIdentityPanel() { const panel = document.getElementById('identity-panel'); panel.classList.toggle('is-closed'); localStorage.setItem(UI_STORAGE_KEY, JSON.stringify({ identityClosed: panel.classList.contains('is-closed') })); }
+function restoreIdentityPanel() { try { const raw = localStorage.getItem(UI_STORAGE_KEY); if (!raw) return; const ui = JSON.parse(raw); if (ui.identityClosed) document.getElementById('identity-panel').classList.add('is-closed'); } catch {} }
 function renderClassSelect() { const select = document.getElementById('class-select'); select.innerHTML = CLASSES.map(cls => `<option value="${cls.id}"${cls.id === state.classeId ? ' selected' : ''}>${cls.nom}</option>`).join(''); select.onchange = () => { state.classeId = select.value; save(); renderAll(); }; }
-function renderIdentity() {
-  document.getElementById('player-label').textContent = state.joueur || PLAYER_META.label;
-  document.getElementById('player-title').textContent = state.nom || 'Nouveau personnage';
-  const classMeta = getClassMeta(state.classeId);
-  document.getElementById('player-subtitle').textContent = `${classMeta.article} ${classMeta.nom}`;
-  const playerInput = document.getElementById('player-name'); playerInput.value = state.joueur; playerInput.oninput = () => { state.joueur = playerInput.value; document.getElementById('player-label').textContent = state.joueur || PLAYER_META.label; save(); };
-  const characterInput = document.getElementById('character-name'); characterInput.value = state.nom; characterInput.oninput = () => { state.nom = characterInput.value; document.getElementById('player-title').textContent = state.nom || 'Nouveau personnage'; save(); };
-}
+function renderIdentity() { document.getElementById('player-label').textContent = state.joueur || PLAYER_META.label; document.getElementById('player-title').textContent = state.nom || 'Nouveau personnage'; const classMeta = getClassMeta(state.classeId); document.getElementById('player-subtitle').textContent = `${classMeta.article} ${classMeta.nom}`; const playerInput = document.getElementById('player-name'); playerInput.value = state.joueur; playerInput.oninput = () => { state.joueur = playerInput.value; document.getElementById('player-label').textContent = state.joueur || PLAYER_META.label; save(); }; const characterInput = document.getElementById('character-name'); characterInput.value = state.nom; characterInput.oninput = () => { state.nom = characterInput.value; document.getElementById('player-title').textContent = state.nom || 'Nouveau personnage'; save(); }; }
 function renderClassPreview() { const classMeta = getClassMeta(state.classeId); document.getElementById('class-preview').innerHTML = `<div class="class-preview-icon"><img src="${classMeta.icone}" alt="${classMeta.nom}" onerror="this.style.display='none'"></div><div><div class="class-preview-name">${classMeta.article} ${classMeta.nom}</div><div class="class-preview-desc">${classMeta.ambiance}</div></div>`; }
 function renderSheetLevel() { const row = document.getElementById('sheet-level-bar'); row.innerHTML = ''; for (let i = 0; i < MAX_LVL; i++) { const level = i + 1; const pip = document.createElement('div'); pip.className = ['level-pip', level <= state.sheet.niveau ? 'filled' : '', level === state.sheet.niveau ? 'current' : ''].filter(Boolean).join(' '); pip.textContent = level; pip.title = `Niveau ${level}`; pip.onclick = () => { state.sheet.niveau = level; save(); renderSheetLevel(); }; row.appendChild(pip); } }
-function renderSheetCaracs() {
-  const grid = document.getElementById('sheet-carac-grid'); grid.innerHTML = '';
-  STATS.forEach(({ key, label }) => { const data = state.sheet.carac[key]; const col = document.createElement('div'); col.className = 'carac-col'; col.innerHTML = `<div class="carac-name">${label}</div>`;
-    const valRow = document.createElement('div'); valRow.className = 'billes-row'; for (let i = 0; i < MAX_VAL; i++) { const value = i + 1; const b = document.createElement('div'); b.className = `bille${value <= data.val ? ' filled' : ''}${value === 1 ? ' fixed' : ''}`; b.title = `${label} ${value}`; b.onclick = () => { state.sheet.carac[key].val = value; save(); renderSheetCaracs(); }; valRow.appendChild(b); } col.appendChild(valRow);
-    const critBlock = document.createElement('div'); critBlock.className = 'crit-block'; critBlock.innerHTML = '<div class="block-label">Critique</div>'; const diceRow = document.createElement('div'); diceRow.className = 'crit-dice'; CRIT_FACES.forEach((face, fi) => { const die = document.createElement('div'); die.innerHTML = dieSVG(face); die.className = `die-face${data.crit[fi] ? ' active' : ''}${fi === 0 ? ' fixed' : ''}`; die.title = `CRIT ${label} : ${face}`; if (fi > 0) die.onclick = () => { state.sheet.carac[key].crit[fi] = !state.sheet.carac[key].crit[fi]; if (!state.sheet.carac[key].crit[1]) state.sheet.carac[key].crit[2] = false; save(); renderSheetCaracs(); }; diceRow.appendChild(die); }); critBlock.appendChild(diceRow); col.appendChild(critBlock);
-    const actBlock = document.createElement('div'); actBlock.className = 'actions-block'; actBlock.innerHTML = '<div class="block-label">Actions / tour</div>'; const actRow = document.createElement('div'); actRow.className = 'billes-row'; for (let i = 0; i < MAX_ACT; i++) { const value = i + 1; const b = document.createElement('div'); b.className = `bille${value <= data.act ? ' filled' : ''}${value === 1 ? ' fixed' : ''}`; b.title = `${label} : ${value} action${value > 1 ? 's' : ''}/tour`; b.onclick = () => { state.sheet.carac[key].act = value; save(); renderSheetCaracs(); }; actRow.appendChild(b); } actBlock.appendChild(actRow); col.appendChild(actBlock); grid.appendChild(col); });
-}
+function renderSheetCaracs() { const grid = document.getElementById('sheet-carac-grid'); grid.innerHTML = ''; STATS.forEach(({ key, label }) => { const data = state.sheet.carac[key]; const col = document.createElement('div'); col.className = 'carac-col'; col.innerHTML = `<div class="carac-name">${label}</div>`; const valRow = document.createElement('div'); valRow.className = 'billes-row'; for (let i = 0; i < MAX_VAL; i++) { const value = i + 1; const b = document.createElement('div'); b.className = `bille${value <= data.val ? ' filled' : ''}${value === 1 ? ' fixed' : ''}`; b.title = `${label} ${value}`; b.onclick = () => { state.sheet.carac[key].val = value; save(); renderSheetCaracs(); }; valRow.appendChild(b); } col.appendChild(valRow); const critBlock = document.createElement('div'); critBlock.className = 'crit-block'; critBlock.innerHTML = '<div class="block-label">Critique</div>'; const diceRow = document.createElement('div'); diceRow.className = 'crit-dice'; CRIT_FACES.forEach((face, fi) => { const die = document.createElement('div'); die.innerHTML = dieSVG(face); die.className = `die-face${data.crit[fi] ? ' active' : ''}${fi === 0 ? ' fixed' : ''}`; die.title = `CRIT ${label} : ${face}`; if (fi > 0) die.onclick = () => { state.sheet.carac[key].crit[fi] = !state.sheet.carac[key].crit[fi]; if (!state.sheet.carac[key].crit[1]) state.sheet.carac[key].crit[2] = false; save(); renderSheetCaracs(); }; diceRow.appendChild(die); }); critBlock.appendChild(diceRow); col.appendChild(critBlock); const actBlock = document.createElement('div'); actBlock.className = 'actions-block'; actBlock.innerHTML = '<div class="block-label">Actions / tour</div>'; const actRow = document.createElement('div'); actRow.className = 'billes-row'; for (let i = 0; i < MAX_ACT; i++) { const value = i + 1; const b = document.createElement('div'); b.className = `bille${value <= data.act ? ' filled' : ''}${value === 1 ? ' fixed' : ''}`; b.title = `${label} : ${value} action${value > 1 ? 's' : ''}/tour`; b.onclick = () => { state.sheet.carac[key].act = value; save(); renderSheetCaracs(); }; actRow.appendChild(b); } actBlock.appendChild(actRow); col.appendChild(actBlock); grid.appendChild(col); }); }
 function renderSheetPV() { const row = document.getElementById('sheet-hearts-row'); row.innerHTML = ''; state.sheet.pv.forEach((h, i) => { const el = document.createElement('span'); el.className = `heart ${h.lost ? 'lost' : 'full'}`; el.textContent = '♥'; el.title = h.lost ? 'Blessure — cliquer pour récupérer' : 'PV — cliquer pour perdre'; el.onclick = () => { state.sheet.pv[i].lost = !state.sheet.pv[i].lost; save(); renderSheetPV(); }; row.appendChild(el); }); }
-function renderSheetEquipement() {
-  const grid = document.getElementById('sheet-equipement-grid'); grid.innerHTML = '';
-  [{ key: 'main1', title: 'Main principale', valueLabel: 'DEG' }, { key: 'main2', title: 'Main secondaire', valueLabel: 'DEG' }, { key: 'armure', title: 'Armure', valueLabel: 'ARM' }].forEach(item => {
-    const data = state.sheet.equipement[item.key]; const card = document.createElement('div'); card.className = 'equipement-card'; card.innerHTML = `<div class="equipement-title">${item.title}</div><div class="equipement-row"><input class="sheet-input" type="text" placeholder="Nom de l'objet" value="${escapeAttr(data.nom)}"><input class="sheet-input" type="text" placeholder="${item.valueLabel}" value="${escapeAttr(data.valeur)}"></div><textarea class="sheet-textarea" placeholder="Description">${escapeText(data.desc)}</textarea>`;
-    const [nomInput, valeurInput] = card.querySelectorAll('input'); const descInput = card.querySelector('textarea');
-    nomInput.oninput = () => { state.sheet.equipement[item.key].nom = nomInput.value; save(); };
-    valeurInput.oninput = () => { state.sheet.equipement[item.key].valeur = valeurInput.value; save(); };
-    descInput.oninput = () => { state.sheet.equipement[item.key].desc = descInput.value; save(); };
-    grid.appendChild(card);
-  });
-}
+function renderSheetEquipement() { const grid = document.getElementById('sheet-equipement-grid'); grid.innerHTML = ''; [{ key: 'main1', title: 'Main principale', valueLabel: 'DEG' }, { key: 'main2', title: 'Main secondaire', valueLabel: 'DEG' }, { key: 'armure', title: 'Armure', valueLabel: 'ARM' }].forEach(item => { const data = state.sheet.equipement[item.key]; const card = document.createElement('div'); card.className = 'equipement-card'; card.innerHTML = `<div class="equipement-title">${item.title}</div><div class="equipement-row"><input class="sheet-input" type="text" placeholder="Nom de l'objet" value="${escapeAttr(data.nom)}"><input class="sheet-input" type="text" placeholder="${item.valueLabel}" value="${escapeAttr(data.valeur)}"></div><textarea class="sheet-textarea" placeholder="Description">${escapeText(data.desc)}</textarea>`; const [nomInput, valeurInput] = card.querySelectorAll('input'); const descInput = card.querySelector('textarea'); nomInput.oninput = () => { state.sheet.equipement[item.key].nom = nomInput.value; save(); }; valeurInput.oninput = () => { state.sheet.equipement[item.key].valeur = valeurInput.value; save(); }; descInput.oninput = () => { state.sheet.equipement[item.key].desc = descInput.value; save(); }; grid.appendChild(card); }); }
 function renderSheetInventaire() { const grid = document.getElementById('sheet-inventaire-grid'); grid.innerHTML = ''; state.sheet.inventaire.forEach((value, i) => { const input = document.createElement('input'); input.className = 'sheet-input inventaire-slot'; input.type = 'text'; input.placeholder = `Objet ${i + 1}`; input.value = value; input.oninput = () => { state.sheet.inventaire[i] = input.value; save(); }; grid.appendChild(input); }); }
 function renderSheet() { renderSheetLevel(); renderSheetCaracs(); renderSheetPV(); renderSheetEquipement(); renderSheetInventaire(); }
-function renderAll() { renderIdentity(); renderClassSelect(); renderClassPreview(); renderSheet(); }
+function renderAll() { renderIdentity(); renderClassSelect(); renderClassPreview(); renderSheet(); restoreIdentityPanel(); }
 load(); renderAll();
 </script>
 </body>
