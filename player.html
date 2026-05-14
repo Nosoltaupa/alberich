@@ -101,6 +101,13 @@
     <div id="player-tree-root"></div>
   </section>
 
+  <section class="player-actions">
+    <button class="sheet-action-btn" type="button" onclick="exportSaveFile()">Exporter la sauvegarde</button>
+    <button class="sheet-action-btn" type="button" onclick="document.getElementById('save-import-input').click()">Importer une sauvegarde</button>
+    <button class="sheet-action-btn danger" type="button" onclick="resetSheet()">Réinitialiser la feuille</button>
+    <input id="save-import-input" type="file" accept="application/json,.json" hidden onchange="importSaveFile(event)">
+  </section>
+
 </div>
 
 <script src="player.js"></script>
