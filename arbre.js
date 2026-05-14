@@ -28,13 +28,31 @@ const PROG_LEVELS = {
   10: { type: 'crit_act' },
 };
 
-const STATS = ['Puissance', 'Finesse', 'Esprit'];
+const STATS = [
+  { key: 'PU', label: 'Puissance' },
+  { key: 'FI', label: 'Finesse' },
+  { key: 'ES', label: 'Esprit' },
+];
+const STAT_LABELS = Object.fromEntries(STATS.map(s => [s.key, s.label]));
+const STAT_KEY_BY_LABEL = Object.fromEntries(STATS.map(s => [s.label, s.key]));
 
 // ---- Helpers ----
 const $ = id => document.getElementById(id);
 const canUnlockBranch = (bi, si) => si === 0 || !!unlocked[`${bi}-${si - 1}`];
 const countUnlocked   = () => Object.values(unlocked).filter(Boolean).length;
 const canUnlockMore   = () => countUnlocked() < playerLevel;
+
+function normalizeProgChoice(choice) {
+  if (!choice?.key || choice.key === 'PV') return choice;
+  const [type, rawStat] = choice.key.split('_');
+  const statKey = STAT_LABELS[rawStat] ? rawStat : STAT_KEY_BY_LABEL[rawStat];
+  return statKey ? { key: `${type}_${statKey}` } : choice;
+}
+
+function statLabelFromChoiceKey(choiceKey) {
+  const statKey = choiceKey?.split('_')[1];
+  return STAT_LABELS[statKey] ?? statKey ?? '';
+}
 
 // ---- Persistance localStorage ----
 function saveToLocal() {
@@ -53,7 +71,11 @@ function loadFromLocal() {
     const data = JSON.parse(raw);
     playerLevel = data.playerLevel ?? 1;
     Object.assign(unlocked, data.unlocked ?? {});
-    Object.assign(progChoices, data.progChoices ?? {});
+    for (const k of Object.keys(progChoices)) delete progChoices[k];
+    Object.entries(data.progChoices ?? {}).forEach(([lvl, choice]) => {
+      progChoices[lvl] = normalizeProgChoice(choice);
+    });
+    saveToLocal();
     return true;
   } catch { return false; }
 }
@@ -84,7 +106,9 @@ function importSave(input) {
       for (const k of Object.keys(progChoices)) delete progChoices[k];
       playerLevel = data.playerLevel;
       Object.assign(unlocked, data.unlocked ?? {});
-      Object.assign(progChoices, data.progChoices ?? {});
+      Object.entries(data.progChoices ?? {}).forEach(([lvl, choice]) => {
+        progChoices[lvl] = normalizeProgChoice(choice);
+      });
       saveToLocal();
       renderAll();
       showStatus(`Sauvegarde chargée (niv. ${playerLevel})`, 'ok', 3000);
@@ -277,10 +301,10 @@ function buildStatSelector(lvl, prefix, labelForStat) {
   const wrap = document.createElement('div');
   wrap.className = 'prog-stat-select';
 
-  STATS.forEach(stat => {
+  STATS.forEach(({ key, label }) => {
     wrap.appendChild(buildChoiceButton(
-      stat,
-      () => makeProgChoice(lvl, { key: `${prefix}_${stat}` }),
+      label,
+      () => makeProgChoice(lvl, { key: `${prefix}_${key}` }),
       { className: 'compact' }
     ));
   });
@@ -305,11 +329,11 @@ function buildStatPvOptions(lvl, reached, choice) {
 
   if (choice) {
     if (choice.key === 'PV') return buildChosenOption('+1 ♥', lvl, reached);
-    if (choice.key?.startsWith('stat_')) return buildChosenOption(`+1 ${choice.key.split('_')[1]}`, lvl, reached);
+    if (choice.key?.startsWith('stat_')) return buildChosenOption(`+1 ${statLabelFromChoiceKey(choice.key)}`, lvl, reached);
   }
 
   if (!reached) {
-    wrap.appendChild(buildChoiceButton('+1 carac', null));
+    wrap.appendChild(buildChoiceButton('+1 caractéristique', null));
     const orEl = document.createElement('span');
     orEl.className = 'prog-or';
     orEl.textContent = 'ou';
@@ -318,7 +342,7 @@ function buildStatPvOptions(lvl, reached, choice) {
     return wrap;
   }
 
-  wrap.appendChild(buildChoiceButton('+1 carac', () => {
+  wrap.appendChild(buildChoiceButton('+1 caractéristique', () => {
     wrap.innerHTML = '';
     wrap.appendChild(buildStatSelector(lvl, 'stat', 'Choisir la caractéristique'));
   }));
@@ -338,8 +362,8 @@ function buildCritActOptions(lvl, reached, choice) {
   wrap.className = 'prog-options';
 
   if (choice) {
-    if (choice.key?.startsWith('crit_')) return buildChosenOption(`CRIT ${choice.key.split('_')[1]} − 1`, lvl, reached);
-    if (choice.key?.startsWith('act_')) return buildChosenOption(`Action ${choice.key.split('_')[1]} + 1`, lvl, reached);
+    if (choice.key?.startsWith('crit_')) return buildChosenOption(`CRIT ${statLabelFromChoiceKey(choice.key)} − 1`, lvl, reached);
+    if (choice.key?.startsWith('act_')) return buildChosenOption(`Action ${statLabelFromChoiceKey(choice.key)} + 1`, lvl, reached);
   }
 
   if (!reached) {
