@@ -8,6 +8,12 @@ const STATS = [
   { key: 'ES', label: 'Esprit' },
 ];
 
+const EQUIPMENT_SLOTS = [
+  { key: 'main1', title: 'Main principale', valueLabel: 'DEG' },
+  { key: 'main2', title: 'Main secondaire', valueLabel: 'DEG' },
+  { key: 'armure', title: 'Armure', valueLabel: 'ARM' },
+];
+
 const CLASSES = [
   {
     id:       'forgeron',
