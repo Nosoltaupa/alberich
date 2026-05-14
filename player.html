@@ -10,6 +10,30 @@
 <script src="theme.js"></script>
 <script src="player-data.js"></script>
 <style>
+  :root {
+    --bille-empty:  #2a2318;
+    --bille-fill:   #c8622a;
+    --bille-border: #52463a;
+    --die-active:   #c9a84c;
+    --die-inactive: #2a2318;
+    --die-border-a: #c9a84c;
+    --die-border-i: #3a3026;
+    --section-bg:   #16120e;
+    --prog-done:    #2a2010;
+  }
+
+  [data-theme="light"] {
+    --bille-empty:  #ddd4c0;
+    --bille-fill:   #a84e1a;
+    --bille-border: #a89070;
+    --die-active:   #8a6820;
+    --die-inactive: #ddd4c0;
+    --die-border-a: #8a6820;
+    --die-border-i: #c8b89a;
+    --section-bg:   #ede6d8;
+    --prog-done:    #d8ceb0;
+  }
+
   body {
     display: block;
     padding: 2rem 1.5rem 4rem;
@@ -173,9 +197,230 @@
     text-align: center;
   }
 
+  .level-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    flex-wrap: wrap;
+    margin-bottom: .8rem;
+  }
+
+  .level-pip,
+  .bille-niveau {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-dim);
+    transition: background .2s, border-color .2s, color .2s, transform .15s;
+  }
+
+  .level-pip:hover,
+  .bille-niveau:hover {
+    border-color: var(--ember-light);
+    transform: scale(1.08);
+  }
+
+  .level-pip.filled,
+  .bille-niveau.filled {
+    background: var(--prog-done);
+    border-color: var(--ember);
+    color: var(--ember-light);
+  }
+
+  .level-pip.current,
+  .bille-niveau.current {
+    background: var(--ember);
+    border-color: var(--ember-light);
+    color: #fff;
+    box-shadow: 0 0 8px rgba(200,98,42,.35);
+  }
+
+  .level-help {
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 12px;
+    font-style: italic;
+  }
+
+  .carac-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+
+  .carac-col {
+    background: var(--section-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: .9rem .6rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .9rem;
+  }
+
+  .carac-name {
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    color: var(--gold-light);
+  }
+
+  .billes-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .bille {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1.5px solid var(--bille-border);
+    background: var(--bille-empty);
+    cursor: pointer;
+    transition: background .15s, border-color .15s, transform .1s;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+
+  .bille.filled {
+    background: var(--bille-fill);
+    border-color: var(--ember-light);
+  }
+
+  .bille.fixed {
+    cursor: default;
+  }
+
+  .bille.locked {
+    cursor: default;
+    opacity: .35;
+  }
+
+  .bille:not(.locked):not(.fixed):hover {
+    transform: scale(1.18);
+    border-color: var(--ember-light);
+  }
+
+  .block-label {
+    font-family: 'Cinzel', serif;
+    font-size: 8px;
+    letter-spacing: .15em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  .crit-block,
+  .actions-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    width: 100%;
+  }
+
+  .crit-dice {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+  }
+
+  .die-face {
+    width: 30px;
+    height: 30px;
+    border-radius: 5px;
+    border: 1.5px solid var(--die-border-i);
+    background: var(--die-inactive);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background .15s, border-color .15s, transform .1s;
+  }
+
+  .die-face.active {
+    background: var(--die-active);
+    border-color: var(--die-border-a);
+  }
+
+  .die-face.fixed {
+    cursor: default;
+  }
+
+  .die-face.locked {
+    cursor: default;
+    opacity: .35;
+  }
+
+  .die-face:not(.locked):not(.fixed):hover {
+    transform: scale(1.1);
+    border-color: var(--ember-light);
+  }
+
+  .die-face svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .die-dot {
+    transition: fill .15s;
+  }
+
+  .die-face.active .die-dot {
+    fill: var(--bg);
+  }
+
+  .die-face:not(.active) .die-dot {
+    fill: var(--text-dim);
+  }
+
+  .hearts-row {
+    display: flex;
+    gap: 7px;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .heart {
+    font-size: 24px;
+    cursor: pointer;
+    line-height: 1;
+    user-select: none;
+    transition: transform .15s, opacity .15s, filter .15s;
+  }
+
+  .heart.full {
+    color: #c0332a;
+    filter: drop-shadow(0 0 3px rgba(192,51,42,.45));
+  }
+
+  .heart.lost {
+    color: #555;
+    opacity: .28;
+    filter: none;
+  }
+
+  .heart:hover {
+    transform: scale(1.2);
+  }
+
   @media (max-width: 640px) {
     .form-grid,
-    .class-preview {
+    .class-preview,
+    .carac-grid {
       grid-template-columns: 1fr;
     }
   }
@@ -220,16 +465,25 @@
   </section>
 
   <section class="player-panel">
-    <div class="panel-title">Arbre de compétences</div>
-    <div class="placeholder-panel">
-      Prochaine étape : intégrer ici le moteur de l'arbre de compétences selon la classe sélectionnée.
-    </div>
+    <div class="panel-title">Feuille de personnage — niveau</div>
+    <div class="level-bar" id="sheet-level-bar"></div>
+    <div class="level-help">Cliquez sur une bille pour définir directement le niveau</div>
   </section>
 
   <section class="player-panel">
-    <div class="panel-title">Feuille de personnage</div>
+    <div class="panel-title">Feuille de personnage — caractéristiques</div>
+    <div class="carac-grid" id="sheet-carac-grid"></div>
+  </section>
+
+  <section class="player-panel">
+    <div class="panel-title">Feuille de personnage — points de vie</div>
+    <div class="hearts-row" id="sheet-hearts-row"></div>
+  </section>
+
+  <section class="player-panel">
+    <div class="panel-title">Arbre de compétences</div>
     <div class="placeholder-panel">
-      Prochaine étape : intégrer ici la feuille de personnage et la relier aux choix de progression.
+      Prochaine étape : intégrer ici le moteur de l'arbre de compétences selon la classe sélectionnée.
     </div>
   </section>
 
@@ -241,17 +495,62 @@ const PLAYER_ID = params.get('id') || 'joueur1';
 const PLAYER_META = getPlayerMeta(PLAYER_ID);
 const STORAGE_KEY = `personnage_${PLAYER_ID}`;
 
+const MAX_VAL = 5;
+const MAX_ACT = 3;
+const MAX_LVL = 10;
+const BASE_PV = 6;
+const CRIT_FACES = [6, 5, 4];
+
+const DIE_DOTS = {
+  4: [[.3,.3],[.7,.3],[.3,.7],[.7,.7]],
+  5: [[.3,.3],[.7,.3],[.5,.5],[.3,.7],[.7,.7]],
+  6: [[.3,.25],[.7,.25],[.3,.5],[.7,.5],[.3,.75],[.7,.75]],
+};
+
+function dieSVG(n) {
+  const circles = (DIE_DOTS[n] || []).map(([cx, cy]) =>
+    `<circle class="die-dot" cx="${cx * 20}" cy="${cy * 20}" r="2.3"/>`
+  ).join('');
+  return `<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">${circles}</svg>`;
+}
+
+function defaultSheetState() {
+  return {
+    niveau: 1,
+    carac: Object.fromEntries(STATS.map(c => [c.key, { val: 1, act: 1, crit: [true, false, false] }])),
+    pv: Array.from({ length: BASE_PV }, () => ({ lost: false })),
+  };
+}
+
 function defaultPlayerState() {
   return {
     id: PLAYER_ID,
     joueur: PLAYER_META.label,
     nom: PLAYER_META.personnage,
     classeId: PLAYER_META.classeId,
+    sheet: defaultSheetState(),
   };
 }
 
 let state = defaultPlayerState();
 let statusTimer = null;
+
+function normalizeSheet(sheet) {
+  const fallback = defaultSheetState();
+  const normalized = { ...fallback, ...(sheet ?? {}) };
+  normalized.carac = normalized.carac ?? {};
+
+  const nextCarac = {};
+  STATS.forEach(({ key }) => {
+    nextCarac[key] = normalized.carac[key] ?? fallback.carac[key];
+  });
+
+  normalized.carac = nextCarac;
+  normalized.pv = Array.isArray(normalized.pv) ? normalized.pv : fallback.pv;
+  normalized.niveau = Number.isInteger(normalized.niveau) ? normalized.niveau : fallback.niveau;
+
+  return normalized;
+}
 
 function save() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -263,6 +562,7 @@ function load() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return;
     state = { ...defaultPlayerState(), ...JSON.parse(raw) };
+    state.sheet = normalizeSheet(state.sheet);
   } catch {}
 }
 
@@ -323,10 +623,135 @@ function renderClassPreview() {
   `;
 }
 
+function renderSheetLevel() {
+  const row = document.getElementById('sheet-level-bar');
+  row.innerHTML = '';
+
+  for (let i = 0; i < MAX_LVL; i++) {
+    const level = i + 1;
+    const pip = document.createElement('div');
+    pip.className = [
+      'level-pip',
+      level <= state.sheet.niveau ? 'filled' : '',
+      level === state.sheet.niveau ? 'current' : '',
+    ].filter(Boolean).join(' ');
+    pip.textContent = level;
+    pip.title = `Niveau ${level}`;
+    pip.onclick = () => {
+      state.sheet.niveau = level;
+      save();
+      renderSheetLevel();
+    };
+    row.appendChild(pip);
+  }
+}
+
+function renderSheetCaracs() {
+  const grid = document.getElementById('sheet-carac-grid');
+  grid.innerHTML = '';
+
+  STATS.forEach(({ key, label }) => {
+    const data = state.sheet.carac[key];
+    const col = document.createElement('div');
+    col.className = 'carac-col';
+    col.innerHTML = `<div class="carac-name">${label}</div>`;
+
+    const valRow = document.createElement('div');
+    valRow.className = 'billes-row';
+    for (let i = 0; i < MAX_VAL; i++) {
+      const value = i + 1;
+      const b = document.createElement('div');
+      b.className = `bille${value <= data.val ? ' filled' : ''}${value === 1 ? ' fixed' : ''}`;
+      b.title = `${label} ${value}`;
+      b.onclick = () => {
+        state.sheet.carac[key].val = value;
+        save();
+        renderSheetCaracs();
+      };
+      valRow.appendChild(b);
+    }
+    col.appendChild(valRow);
+
+    const critBlock = document.createElement('div');
+    critBlock.className = 'crit-block';
+    critBlock.innerHTML = '<div class="block-label">Critique</div>';
+    const diceRow = document.createElement('div');
+    diceRow.className = 'crit-dice';
+
+    CRIT_FACES.forEach((face, fi) => {
+      const die = document.createElement('div');
+      die.innerHTML = dieSVG(face);
+      die.className = `die-face${data.crit[fi] ? ' active' : ''}${fi === 0 ? ' fixed' : ''}`;
+      die.title = `CRIT ${label} : ${face}`;
+      if (fi > 0) {
+        die.onclick = () => {
+          state.sheet.carac[key].crit[fi] = !state.sheet.carac[key].crit[fi];
+          if (!state.sheet.carac[key].crit[1]) state.sheet.carac[key].crit[2] = false;
+          save();
+          renderSheetCaracs();
+        };
+      }
+      diceRow.appendChild(die);
+    });
+
+    critBlock.appendChild(diceRow);
+    col.appendChild(critBlock);
+
+    const actBlock = document.createElement('div');
+    actBlock.className = 'actions-block';
+    actBlock.innerHTML = '<div class="block-label">Actions / tour</div>';
+    const actRow = document.createElement('div');
+    actRow.className = 'billes-row';
+
+    for (let i = 0; i < MAX_ACT; i++) {
+      const value = i + 1;
+      const b = document.createElement('div');
+      b.className = `bille${value <= data.act ? ' filled' : ''}${value === 1 ? ' fixed' : ''}`;
+      b.title = `${label} : ${value} action${value > 1 ? 's' : ''}/tour`;
+      b.onclick = () => {
+        state.sheet.carac[key].act = value;
+        save();
+        renderSheetCaracs();
+      };
+      actRow.appendChild(b);
+    }
+
+    actBlock.appendChild(actRow);
+    col.appendChild(actBlock);
+
+    grid.appendChild(col);
+  });
+}
+
+function renderSheetPV() {
+  const row = document.getElementById('sheet-hearts-row');
+  row.innerHTML = '';
+
+  state.sheet.pv.forEach((h, i) => {
+    const el = document.createElement('span');
+    el.className = `heart ${h.lost ? 'lost' : 'full'}`;
+    el.textContent = '♥';
+    el.title = h.lost ? 'Blessure — cliquer pour récupérer' : 'PV — cliquer pour perdre';
+    el.onclick = () => {
+      state.sheet.pv[i].lost = !state.sheet.pv[i].lost;
+      save();
+      renderSheetPV();
+    };
+    row.appendChild(el);
+  });
+}
+
+function renderSheet() {
+  renderSheetLevel();
+  renderSheetCaracs();
+  renderSheetPV();
+}
+
 function renderAll() {
   renderIdentity();
   renderClassSelect();
   renderClassPreview();
+  renderSheet();
 }
 
 load();
