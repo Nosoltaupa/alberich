@@ -9,7 +9,6 @@ const TREE_STATE_DEFAULT = () => ({
 });
 
 function normalizeTreeState(tree, classId) {
-  const fallback = TREE_STATE_DEFAULT();
   return {
     classId,
     unlocked: tree?.classId === classId ? (tree.unlocked ?? {}) : {},
@@ -29,23 +28,19 @@ function ensurePlayerTreeState(state) {
   state.tree = normalizeTreeState(state.tree, state.classeId);
 }
 
-function loadClassScript(classId) {
-  return new Promise((resolve, reject) => {
-    const existing = document.getElementById('dynamic-class-script');
-    if (existing) existing.remove();
+async function loadClassScript(classId) {
+  const response = await fetch(`${classId}/classe.js?v=${Date.now()}`);
+  if (!response.ok) throw new Error(`Impossible de charger ${classId}/classe.js`);
 
-    window.CLASS_DATA = undefined;
+  const source = await response.text();
+  const factory = new Function(`${source}\nreturn CLASS_DATA;`);
+  const classData = factory();
 
-    const script = document.createElement('script');
-    script.id = 'dynamic-class-script';
-    script.src = `${classId}/classe.js?v=${Date.now()}`;
-    script.onload = () => {
-      if (window.CLASS_DATA) resolve(window.CLASS_DATA);
-      else reject(new Error(`CLASS_DATA introuvable pour ${classId}`));
-    };
-    script.onerror = () => reject(new Error(`Impossible de charger ${classId}/classe.js`));
-    document.body.appendChild(script);
-  });
+  if (!classData?.branches || !classData?.ultime) {
+    throw new Error(`Données de classe invalides pour ${classId}`);
+  }
+
+  return classData;
 }
 
 function renderPlayerTree({ containerId, classId, classData, treeState, playerLevel, onChange }) {
@@ -121,9 +116,8 @@ function renderPlayerTree({ containerId, classId, classData, treeState, playerLe
       btn.disabled = !unlocked && (locked || !canUnlockMore);
       btn.onclick = event => {
         event.stopPropagation();
-        if (unlocked) {
-          revokeTreeSkill(treeState, branchIndex, skillIndex);
-        } else {
+        if (unlocked) revokeTreeSkill(treeState, branchIndex, skillIndex);
+        else {
           treeState.unlocked[key] = true;
           treeState.openCards[key] = true;
         }
@@ -141,9 +135,7 @@ function renderPlayerTree({ containerId, classId, classData, treeState, playerLe
 }
 
 function revokeTreeSkill(treeState, branchIndex, skillIndex) {
-  for (let i = skillIndex; i < 3; i++) {
-    delete treeState.unlocked[`${branchIndex}-${i}`];
-  }
+  for (let i = skillIndex; i < 3; i++) delete treeState.unlocked[`${branchIndex}-${i}`];
 }
 
 function renderPlayerUltimate({ classData, treeState, playerLevel, canUnlockMore, onChange }) {
