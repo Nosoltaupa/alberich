@@ -82,10 +82,10 @@ body { display:block; padding:2rem 1.5rem 4rem; }
 .heart.full { color:#c0332a; filter:drop-shadow(0 0 3px rgba(192,51,42,.45)); }
 .heart.lost { color:#555; opacity:.28; filter:none; }
 .heart:hover { transform:scale(1.2); }
-.equipement-grid { display:grid; grid-template-columns:1fr; gap:.9rem; }
+.equipement-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:.75rem; align-items:start; }
 .equipement-card,.inventaire-slot { background:var(--section-bg); border:1px solid var(--border); border-radius:4px; padding:.8rem; }
 .equipement-title { font-family:'Cinzel',serif; font-size:var(--font-readable); letter-spacing:.1em; color:var(--gold-light); text-transform:uppercase; margin-bottom:.6rem; }
-.equipement-row { display:grid; grid-template-columns:1fr 95px; gap:.6rem; margin-bottom:.6rem; }
+.equipement-row { display:grid; grid-template-columns:1fr; gap:.6rem; margin-bottom:.6rem; }
 .inventaire-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:.6rem; }
 .player-tree-head { display:flex; justify-content:space-between; gap:1rem; align-items:flex-start; margin-bottom:1rem; }
 .player-tree-title { font-family:'Cinzel',serif; font-size:1.1rem; color:var(--gold-light); letter-spacing:.06em; }
@@ -119,4 +119,4 @@ body { display:block; padding:2rem 1.5rem 4rem; }
 .sheet-action-btn { font-family:'Cinzel',serif; font-size:var(--font-readable); letter-spacing:.12em; text-transform:uppercase; padding:6px 14px; border-radius:2px; cursor:pointer; border:1px solid var(--border); background:transparent; color:var(--text-dim); transition:all .15s; }
 .sheet-action-btn:hover { border-color:var(--ember); color:var(--ember-light); }
 .sheet-action-btn.danger:hover { border-color:#a04040; color:#c06060; }
-@media (max-width:640px) { .form-grid,.style-grid,.class-preview,.carac-grid,.inventaire-grid,.player-tree-grid,.progression-grid { grid-template-columns:1fr; } .field-group.full { grid-column:1 / -1; } .equipement-row { grid-template-columns:1fr; } .player-tree-head { flex-direction:column; } }
+@media (max-width:640px) { .form-grid,.style-grid,.class-preview,.carac-grid,.inventaire-grid,.player-tree-grid,.progression-grid,.equipement-grid { grid-template-columns:1fr; } .field-group.full { grid-column:1 / -1; } .equipement-row { grid-template-columns:1fr; } .player-tree-head { flex-direction:column; } }
