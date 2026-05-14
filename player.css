@@ -52,7 +52,10 @@ body { display:block; padding:2rem 1.5rem 4rem; }
 .progression-btn { font-family:'Cinzel',serif; font-size:var(--font-readable); border:1px solid var(--border); border-radius:3px; background:var(--bg3); color:var(--text); padding:.35rem .55rem; cursor:pointer; }
 .progression-btn.active { border-color:var(--ember); color:var(--ember-light); background:var(--prog-done); }
 .progression-btn:disabled { opacity:.35; cursor:not-allowed; }
-.progression-stat-row { display:flex; flex-wrap:wrap; gap:.45rem; margin-top:.5rem; }
+.progression-stat-row { display:flex; flex-wrap:wrap; gap:.25rem; margin-top:.35rem; }
+.progression-stat-row .progression-btn { background:transparent; border-color:transparent; color:var(--text-muted); padding:.15rem .35rem; font-size:.86rem; letter-spacing:.04em; }
+.progression-stat-row .progression-btn:hover:not(:disabled) { color:var(--ember-light); border-color:var(--border); background:var(--bg3); }
+.progression-stat-row .progression-btn.active { color:var(--ember-light); border-color:var(--ember); background:transparent; }
 .creation-stat-control { display:flex; align-items:center; gap:.45rem; border:1px solid var(--border); background:var(--bg3); border-radius:3px; padding:.35rem .5rem; font-family:'Cinzel',serif; color:var(--text); }
 .creation-stat-control span { color:var(--gold-light); }
 .creation-stat-control strong { min-width:1.2rem; text-align:center; color:var(--ember-light); }
