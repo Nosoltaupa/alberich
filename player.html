@@ -20,6 +20,7 @@
     --die-border-i: #3a3026;
     --section-bg:   #16120e;
     --prog-done:    #2a2010;
+    --font-readable: 15px;
   }
 
   [data-theme="light"] {
@@ -47,8 +48,8 @@
 
   .player-header {
     text-align: center;
-    margin-bottom: 2rem;
-    padding-bottom: 1.5rem;
+    margin-bottom: 1.8rem;
+    padding-bottom: 1.35rem;
     border-bottom: 1px solid var(--border);
     position: relative;
   }
@@ -66,23 +67,23 @@
 
   .player-label {
     font-family: 'Cinzel', serif;
-    font-size: 10px;
-    letter-spacing: .22em;
+    font-size: var(--font-readable);
+    letter-spacing: .14em;
     color: var(--ember);
     text-transform: uppercase;
-    margin-bottom: .7rem;
+    margin-bottom: .55rem;
   }
 
   .player-title {
     font-family: 'Cinzel Decorative', serif;
-    font-size: clamp(1.8rem, 6vw, 3rem);
+    font-size: clamp(1.55rem, 4.5vw, 2.45rem);
     color: var(--gold-l);
-    margin: 0 0 .6rem;
+    margin: 0 0 .5rem;
   }
 
   .player-subtitle {
     color: var(--text-m);
-    font-size: 14px;
+    font-size: var(--font-readable);
     font-style: italic;
   }
 
@@ -108,8 +109,8 @@
 
   .panel-title {
     font-family: 'Cinzel', serif;
-    font-size: 11px;
-    letter-spacing: .16em;
+    font-size: var(--font-readable);
+    letter-spacing: .12em;
     color: var(--gold);
     text-transform: uppercase;
     margin-bottom: .8rem;
@@ -140,8 +141,8 @@
 
   .field-label {
     font-family: 'Cinzel', serif;
-    font-size: 9px;
-    letter-spacing: .14em;
+    font-size: var(--font-readable);
+    letter-spacing: .08em;
     color: var(--text-dim);
     text-transform: uppercase;
   }
@@ -154,7 +155,7 @@
     border-radius: 3px;
     color: var(--text);
     font-family: 'Crimson Pro', Georgia, serif;
-    font-size: 15px;
+    font-size: var(--font-readable);
     outline: none;
     padding: .45rem .55rem;
   }
@@ -189,29 +190,31 @@
 
   .class-preview-name {
     font-family: 'Cinzel', serif;
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     color: var(--gold-light);
-    letter-spacing: .05em;
+    letter-spacing: .04em;
   }
 
   .class-preview-desc {
     margin-top: .25rem;
     color: var(--text-muted);
+    font-size: var(--font-readable);
     font-style: italic;
     line-height: 1.5;
   }
 
   .placeholder-panel {
     color: var(--text-muted);
+    font-size: var(--font-readable);
     font-style: italic;
     line-height: 1.6;
   }
 
   .status-line {
-    min-height: 16px;
+    min-height: 18px;
     margin-top: .45rem;
     color: var(--ember-light);
-    font-size: 12px;
+    font-size: var(--font-readable);
     font-style: italic;
     text-align: center;
   }
@@ -227,8 +230,8 @@
 
   .level-pip,
   .bille-niveau {
-    width: 26px;
-    height: 26px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
     background: var(--bg3);
     border: 1px solid var(--border);
@@ -237,7 +240,7 @@
     align-items: center;
     justify-content: center;
     font-family: 'Cinzel', serif;
-    font-size: 11px;
+    font-size: var(--font-readable);
     font-weight: 600;
     color: var(--text-dim);
     transition: background .2s, border-color .2s, color .2s, transform .15s;
@@ -267,7 +270,7 @@
   .level-help {
     text-align: center;
     color: var(--text-dim);
-    font-size: 12px;
+    font-size: var(--font-readable);
     font-style: italic;
   }
 
@@ -290,9 +293,9 @@
 
   .carac-name {
     font-family: 'Cinzel', serif;
-    font-size: 14px;
+    font-size: 1rem;
     font-weight: 700;
-    letter-spacing: .1em;
+    letter-spacing: .08em;
     color: var(--gold-light);
   }
 
@@ -303,8 +306,8 @@
   }
 
   .bille {
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
     border: 1.5px solid var(--bille-border);
     background: var(--bille-empty);
@@ -335,8 +338,8 @@
 
   .block-label {
     font-family: 'Cinzel', serif;
-    font-size: 8px;
-    letter-spacing: .15em;
+    font-size: var(--font-readable);
+    letter-spacing: .08em;
     color: var(--text-dim);
     text-transform: uppercase;
   }
@@ -357,8 +360,8 @@
   }
 
   .die-face {
-    width: 30px;
-    height: 30px;
+    width: 32px;
+    height: 32px;
     border-radius: 5px;
     border: 1.5px solid var(--die-border-i);
     background: var(--die-inactive);
@@ -389,8 +392,8 @@
   }
 
   .die-face svg {
-    width: 20px;
-    height: 20px;
+    width: 21px;
+    height: 21px;
   }
 
   .die-dot {
@@ -407,14 +410,14 @@
 
   .hearts-row {
     display: flex;
-    gap: 7px;
+    gap: 8px;
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
   }
 
   .heart {
-    font-size: 24px;
+    font-size: 27px;
     cursor: pointer;
     line-height: 1;
     user-select: none;
