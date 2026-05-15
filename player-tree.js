@@ -29,12 +29,10 @@ function ensurePlayerTreeState(state) {
 }
 
 async function loadClassScript(classId) {
-  const response = await fetch(`${classId}/classe.js?v=${Date.now()}`);
-  if (!response.ok) throw new Error(`Impossible de charger ${classId}/classe.js`);
+  const response = await fetch(`${classId}/classe.json?v=${Date.now()}`);
+  if (!response.ok) throw new Error(`Impossible de charger ${classId}/classe.json`);
 
-  const source = await response.text();
-  const factory = new Function(`${source}\nreturn CLASS_DATA;`);
-  const classData = factory();
+  const classData = await response.json();
 
   if (!classData?.branches || !classData?.ultime) {
     throw new Error(`Données de classe invalides pour ${classId}`);
