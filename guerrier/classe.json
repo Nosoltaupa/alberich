@@ -1,0 +1,62 @@
+{
+  "nom": "Guerrier",
+  "article": "Le",
+  "ambiance": "Rompu au combat avec toutes sortes d'armes comme à mains nues, au commandement et à la stratégie militaire.",
+  "ultime": {
+    "nom": "Ulti",
+    "desc": "???"
+  },
+  "branches": [
+    {
+      "nom": "Commandement",
+      "competences": [
+        {
+          "nom": "Aura de commandement",
+          "desc": "Les troupes sous les ordres du guerrier ont +1 au combat."
+        },
+        {
+          "nom": "Plan d'attaque",
+          "desc": "Le guerrier élabore un plan, ce qui baisse le seuil de CRIT au combat de 1 pour toutes les troupes qui suivent le plan."
+        },
+        {
+          "nom": "Sus à l'ennemi !",
+          "desc": "Le guerrier donne un ordre d'attaque à un allié, ce qui lui permet de réasier une action de combat gratuite, même s'il est hors-combat."
+        }
+      ]
+    },
+    {
+      "nom": "Maître d’armes",
+      "competences": [
+        {
+          "nom": "Expertise",
+          "desc": "DEG+1 avec toutes les armes et à mains nues."
+        },
+        {
+          "nom": "Baroud d'honneur",
+          "desc": "Lorsque le guerrier échoue à un jet de combat, son action suivante est automatiquement un CRIT."
+        },
+        {
+          "nom": "Enchaînement",
+          "desc": "En cas de réussite d'une action de combat, une fois par tour, le guerrier peut effectuer un enchaînement en effectuant une action de cmobat différente supplémentaire."
+        }
+      ]
+    },
+    {
+      "nom": "Domination",
+      "competences": [
+        {
+          "nom": "Désarmer",
+          "desc": "Sur un CRIT, la cible du guerrier subit l'effet désarmé, ce qui baisse ses DEG de 1."
+        },
+        {
+          "nom": "Renverser",
+          "desc": "Sur un CRIT contre une cible désarmée, la cible du guerrier subit l'effet renversé, ce qui la projette au sol jusqu'à la fin du tour. La cible devra dépenser une action de FI au tour suivant pour se relever."
+        },
+        {
+          "nom": "Terrasser",
+          "desc": "Toute attaque réussie contre une cible affectée par un effet est automatiquement un CRIT."
+        }
+      ]
+    }
+  ]
+}
