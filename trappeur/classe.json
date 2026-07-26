@@ -4,7 +4,7 @@
   "ambiance": "Maître de la survie dans les montagnes et de la chasse au moyen de pièges ingénieux.",
   "ultime": {
     "nom": "Traqueur de Norlithe",
-    "desc": "Au prix d'une action d'ES par tour (réussite automatique), le trappeur peut percevoir la norlithe et les créatures touchées par la norlithe dans un rayon de 50m autour de lui, y compris à travers la matière. Lorsqu'il active cette compétence en combat, cela lui permet également d'avoir une seconde chance pour les attaques contre les créatures touchées par la norlithe : tout jet raté peut être relancé. Il n'y a pas de troisième chance."
+    "desc": "Au prix d'une action d'ES par tour (réussite automatique), le trappeur peut percevoir les créatures touchées par la norlithe dans un rayon de 50m autour de lui, y compris à travers la matière. Lorsqu'il active cette compétence en combat, cela lui permet également d'avoir une seconde chance pour les attaques contre les créatures touchées par la norlithe : tout jet raté peut être relancé. Il n'y a pas de troisième chance."
   },
   "branches": [
     {
