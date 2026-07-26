@@ -4,7 +4,7 @@
   "ambiance": "Puissant ouvrier habitué des galeries souterraines et des gobelins qui les infestent.",
   "ultime": {
     "nom": "Golem de Norlithe",
-    "desc": "La norlithe permet au mineur de se transformer temporairement en golem de norlithe. Une fois par jour, pendant toute la durée d'un combat, le mineur se transforme en un golem composé de Norlithe. Une fois transformé, lLe mineur ne peut utiliser aucun équipement, ni arme ni armure. Sa PU est doublée. Son ARM, ses DEG et ses PV sont augmentés de sa valeur de PU. Après le combat, le mineur revient à sa forme naine et est épuisé : il tombe à 1PV et sa PU est divisée par 2 (arrondi à l'inférieur) jusqu'à sa prochaine nuit de sommeil."
+    "desc": "La norlithe permet au mineur de transformer temporairement son bras en norlithe. Une fois par jour, pendant toute la durée d'un combat, son bras se transforme. Le mineur ne peut plus utiliser d'arme ou d'armure sur ce bras. Sa PU est doublée. Son ARM, ses DEG et ses PV sont augmentés de sa valeur de PU. Après le combat, le mineur revient à la normale et est épuisé : il tombe à 1PV et sa PU est divisée par 2 (arrondi à l'inférieur) jusqu'à sa prochaine nuit de sommeil. Le bras accumule des stigmates des transformations sous forme de cicatrices, écailles ou pics."
   },
   "branches": [
     {
